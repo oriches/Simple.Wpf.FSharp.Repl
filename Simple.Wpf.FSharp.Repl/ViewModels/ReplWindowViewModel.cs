@@ -5,18 +5,21 @@
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Reactive;
+    using System.Reactive.Disposables;
     using System.Reactive.Subjects;
     using System.Windows.Input;
     using Commands;
 
-    public sealed class ReplWindowViewModel : IReplWindowViewModel, IDisposable
+    public sealed class ReplWindowViewModel : BaseViewModel, IReplWindowViewModel, IDisposable
     {
-        private readonly IDisposable _disposable;
+        private readonly CompositeDisposable _disposable;
         private readonly ObservableCollection<ReplOuputViewModel> _output;
         private readonly Subject<Unit> _reset;
+        private State _state;
 
-        public ReplWindowViewModel(IObservable<ReplOuputViewModel> replOutputObservable)
+        public ReplWindowViewModel(IObservable<State> replState, IObservable<ReplOuputViewModel> replOutput)
         {
+            _state = Repl.State.Unknown;
             _output = new ObservableCollection<ReplOuputViewModel>();
 
             _reset = new Subject<Unit>();
@@ -24,9 +27,18 @@
             ClearCommand = new ReplRelayCommand(Clear, CanClear);
             ResetCommand = new ReplRelayCommand(ResetImpl);
 
-            _disposable = replOutputObservable
-                .Subscribe(x => _output.Add(x));
+            _disposable = new CompositeDisposable
+            {
+                replState.Subscribe(UpdateState),
+                replOutput.Subscribe(x =>
+                {
+                    _output.Add(x);
+                    CommandManager.InvalidateRequerySuggested();
+                })
+            };
         }
+
+        public string State { get { return _state.ToString(); } }
 
         public IObservable<Unit> Reset { get { return _reset; } }
 
@@ -57,7 +69,16 @@
 
         private void ResetImpl()
         {
+            _output.Clear();
             _reset.OnNext(Unit.Default);
+        }
+
+        private void UpdateState(State state)
+        {
+            _state = state;
+            OnPropertyChanged("State");
+
+            // Enable\Disable commands etc...
         }
     }
 }

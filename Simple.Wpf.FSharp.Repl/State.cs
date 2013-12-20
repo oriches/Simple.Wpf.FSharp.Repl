@@ -2,6 +2,7 @@
 {
     public enum State
     {
+        Unknown = -1,
         Faulted = 0,
         Starting = 1,
         Running = 2,

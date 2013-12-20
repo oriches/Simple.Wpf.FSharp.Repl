@@ -72,7 +72,7 @@
 
         public ReplEngine(string workingDirectory = null, IScheduler scheduler = null)
         {
-            _stateStream = new BehaviorSubject<State>(Repl.State.Stopped);
+            _stateStream = new BehaviorSubject<State>(Repl.State.Unknown);
             _scheduler = scheduler ?? TaskPoolScheduler.Default;
 
             _outputStream = new Subject<string>();
@@ -168,12 +168,13 @@
         private ReplProcess StartProcess()
         {
             var process = CreateProcess();
-            process.Start();
-
+            
             var tokenSource = new CancellationTokenSource();
 
             var disposable = Observable.Start(() =>
             {
+                process.Start();
+
                 while (true)
                 {
                     try

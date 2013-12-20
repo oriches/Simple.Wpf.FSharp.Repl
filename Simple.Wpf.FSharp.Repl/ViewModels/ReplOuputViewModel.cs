@@ -2,7 +2,7 @@
 {
     using System.Text.RegularExpressions;
 
-    public sealed class ReplOuputViewModel
+    public sealed class ReplOuputViewModel : BaseViewModel
     {
         private static readonly Regex IsErrorRegex = new Regex(@"stdin\((\d+),(\d+)\): error FS");
 

@@ -3,7 +3,7 @@
     using System;
     using System.Windows.Input;
 
-    public sealed class ReplRelayCommand : ReplRelayCommand<object>
+    internal sealed class ReplRelayCommand : ReplRelayCommand<object>
     {
         public ReplRelayCommand(Action execute)
             : base(x => execute(), x => true)
@@ -15,7 +15,7 @@
         }
     }
 
-    public class ReplRelayCommand<T> : IReplRelayCommand<T>
+    internal class ReplRelayCommand<T> : IReplRelayCommand<T>
     {
         private readonly Action<T> _execute;
         private readonly Func<T, bool> _canExecute;

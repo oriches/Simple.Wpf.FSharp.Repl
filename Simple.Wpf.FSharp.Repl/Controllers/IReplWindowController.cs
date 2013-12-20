@@ -4,6 +4,6 @@
 
     public interface IReplWindowController
     {
-        ReplWindowViewModel ViewModel { get; }
+        IReplWindowViewModel ViewModel { get; }
     }
 }

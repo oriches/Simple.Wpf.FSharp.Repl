@@ -1,8 +1,16 @@
 ﻿<Window x:Class="Wpf.TestHarness.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
+        xmlns:vm="clr-namespace:Wpf.TestHarness"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        Title="MainWindow"
+        Height="350"
+        Width="525">
     <Grid>
+        
+        <ContentControl Content="{Binding Path=Content, Mode=OneWay}" />
         
     </Grid>
 </Window>
