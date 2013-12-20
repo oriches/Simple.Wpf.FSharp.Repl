@@ -9,17 +9,20 @@
     using System.Reactive.Subjects;
     using System.Reflection;
     using System.Threading;
+    using Extensions;
 
     public sealed class ReplEngine : IReplEngine
     {
         private readonly IScheduler _scheduler;
         private const string FSharpDirectory = @"FSharp";
         private const string FSharpExecutable = @"fsi.exe";
-        private const string FSharpEndofLineCharacter = ";";
         private const string FSharpQuitLine = "#quit;;";
-        
+        private const string FSharpScriptTermination = ";;";
+        private const string FSharpAwaitingInput = "> ";
+
         private readonly string _baseWorkingDirectory;
         private readonly Subject<string> _outputStream;
+        private readonly BehaviorSubject<State> _stateStream;
 
         private string _startupScript;
         private ReplProcess _replProcess;
@@ -69,6 +72,7 @@
 
         public ReplEngine(string workingDirectory = null, IScheduler scheduler = null)
         {
+            _stateStream = new BehaviorSubject<State>(Repl.State.Stopped);
             _scheduler = scheduler ?? TaskPoolScheduler.Default;
 
             _outputStream = new Subject<string>();
@@ -79,16 +83,20 @@
             }
         }
 
-        public IObservable<string> Output { get { return _outputStream; } }  
+        public IObservable<string> Output { get { return _outputStream; } }
+
+        public IObservable<State> State { get { return _stateStream.DistinctUntilChanged(); } }
 
         public IReplEngine Start(string script = null)
         {
-            if (_replProcess != null)
+            if (_stateStream.First() != Repl.State.Stopped)
             {
                 return this;
             }
 
-            _startupScript = CleanScript(script);
+            _stateStream.OnNext(Repl.State.Starting);
+
+            _startupScript = script;
             _replProcess = StartProcess();
 
             return this;
@@ -96,46 +104,58 @@
 
         public IReplEngine Stop()
         {
-            if (_replProcess == null)
+            var state = _stateStream.First();
+            if (state == Repl.State.Stopping || state == Repl.State.Stopped)
             {
                 return this;
             }
 
-            _replProcess.Dispose();
-            _replProcess = null;
+            _stateStream.OnNext(Repl.State.Stopping);
 
+            _replProcess.Dispose();
+
+            _replProcess = null;
             _startupScript = null;
+
+            _stateStream.OnNext(Repl.State.Stopped);
 
             return this;
         }
 
         public IReplEngine Reset()
         {
-            if (_replProcess == null)
+            var state = _stateStream.First();
+            if (state == Repl.State.Stopping || state == Repl.State.Stopped)
             {
                 return this;
             }
 
-           _replProcess.Dispose();
-           _replProcess = StartProcess();
+            _stateStream.OnNext(Repl.State.Stopping);
+
+            _replProcess.Dispose();
+
+            _stateStream.OnNext(Repl.State.Stopped);
+            _stateStream.OnNext(Repl.State.Starting);
+
+            _replProcess = StartProcess();
 
             return this;
         }
-        
+
         public IReplEngine Execute(string script)
         {
-            if (_replProcess == null)
+            var state = _stateStream.First();
+            if (state != Repl.State.Running && state != Repl.State.Executing)
             {
                 return this;
             }
 
-            if (string.IsNullOrWhiteSpace(script))
+            if (script.EndsWith(FSharpScriptTermination))
             {
-                return this;
+                _stateStream.OnNext(Repl.State.Executing);
             }
 
-            var cleanedScript = CleanScript(script);
-            _replProcess.WriteLine(cleanedScript);
+            _replProcess.WriteLine(script);
 
             return this;
         }
@@ -154,20 +174,45 @@
 
             var disposable = Observable.Start(() =>
             {
-                if (!string.IsNullOrEmpty(_startupScript))
-                {
-                    process.StandardInput.WriteLine(_startupScript);
-                }
-
                 while (true)
                 {
                     try
                     {
-                        var readLineTask = process.StandardOutput.ReadLineAsync(tokenSource.Token);
-                        readLineTask.Wait(tokenSource.Token);
+                        var input = string.Empty;
+                        while (true)
+                        {
+                            var readTask = process.StandardOutput.ReadAsync(tokenSource.Token);
+                            readTask.Wait(tokenSource.Token);
 
-                        var line = readLineTask.Result;
-                        _outputStream.OnNext(line);
+                            input += (char)readTask.Result;
+
+                            if (input == FSharpAwaitingInput)
+                            {
+                                _outputStream.OnNext(input);
+
+                                if (_stateStream.First() == Repl.State.Starting && !string.IsNullOrEmpty(_startupScript))
+                                {
+                                    _outputStream.OnNext(_startupScript);
+                                    _outputStream.OnNext(Environment.NewLine);
+
+                                    _stateStream.OnNext(Repl.State.Running);
+
+                                    Execute(_startupScript);
+                                }
+                                else
+                                {
+                                    _stateStream.OnNext(Repl.State.Running);
+                                }
+
+                                break;
+                            }
+
+                            if (input.EndsWith(Environment.NewLine))
+                            {
+                                _outputStream.OnNext(input);
+                                break;
+                            }
+                        }
                     }
                     catch (OperationCanceledException)
                     {
@@ -175,7 +220,7 @@
                     }
                 }
             }, _scheduler)
-            .Subscribe();
+            .Subscribe(_ => { }, e => _stateStream.OnNext(Repl.State.Faulted));
 
             return new ReplProcess(process, Disposable.Create(() =>
             {
@@ -221,46 +266,23 @@
         private Process CreateProcess()
         {
             var process = new Process
-                    {
-                        StartInfo =
-                        {
-                            UseShellExecute = false,
-                            RedirectStandardOutput = true,
-                            RedirectStandardInput = true,
-                            WorkingDirectory = BuildWorkingDirectory(),
-                            FileName = BuildExecutablePath()
-                        }
-                    };
+            {
+                StartInfo =
+                {
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardInput = true,
+                    WorkingDirectory = BuildWorkingDirectory(),
+                    FileName = BuildExecutablePath()
+                }
+            };
 
+            Debug.WriteLine("**************************");
             Debug.WriteLine("WorkingDirectory - " + process.StartInfo.WorkingDirectory);
             Debug.WriteLine("FileName - " + process.StartInfo.FileName);
+            Debug.WriteLine("**************************");
 
             return process;
-        }
-
-        private static string CleanScript(string script)
-        {
-            var cleanedScript = script;
-            if (!string.IsNullOrWhiteSpace(script))
-            {
-                cleanedScript = script.Trim();
-
-                const string endofline = FSharpEndofLineCharacter + FSharpEndofLineCharacter;
-                if (cleanedScript.EndsWith(endofline))
-                {
-                    // do nothing, already terminated...
-                }
-                else if (cleanedScript.EndsWith(FSharpEndofLineCharacter))
-                {
-                    cleanedScript += FSharpEndofLineCharacter;
-                }
-                else
-                {
-                    cleanedScript += endofline;
-                }
-            }
-
-            return cleanedScript;
         }
     }
 }

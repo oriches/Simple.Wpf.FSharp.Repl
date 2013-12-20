@@ -1,6 +1,7 @@
-﻿namespace TestHarness
+﻿namespace Console.TestHarness
 {
     using System;
+    using System.Diagnostics;
     using Simple.Wpf.FSharp.Repl;
 
     class Program
@@ -9,9 +10,11 @@
         {
             using (var engine = new ReplEngine())
             {
-                engine.Output.Subscribe(Console.WriteLine);
+                engine.State.Subscribe(x => Debug.WriteLine("state = " + x.ToString()));
 
-                engine.Start("let answer = 42.00");
+                engine.Output.Subscribe(Console.Write);
+
+                engine.Start("let answer = 42.00;;");
 
                 while (true)
                 {

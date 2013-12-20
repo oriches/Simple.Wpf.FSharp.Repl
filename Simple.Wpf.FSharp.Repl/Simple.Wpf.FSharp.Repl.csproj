@@ -31,6 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Reactive.Core">
@@ -45,17 +47,33 @@
     <Reference Include="System.Reactive.PlatformServices">
       <HintPath>..\packages\Rx-PlatformServices.2.2.2\lib\net40\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
+    <Reference Include="System.Reactive.Windows.Threading">
+      <HintPath>..\packages\Rx-XAML.2.2.2\lib\net40\System.Reactive.Windows.Threading.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsyncReadLineExtension.cs" />
+    <Compile Include="Extensions\AsyncExtension.cs" />
+    <Compile Include="Commands\IReplRelayCommand.cs" />
     <Compile Include="IReplEngine.cs" />
+    <Compile Include="Controllers\IReplWindowController.cs" />
+    <Compile Include="State.cs" />
+    <Compile Include="ViewModels\IReplWindowViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Commands\ReplRelayCommand.cs" />
     <Compile Include="ReplEngine.cs" />
+    <Compile Include="ViewModels\ReplOuputViewModel.cs" />
+    <Compile Include="Views\ReplWindow.xaml.cs">
+      <DependentUpon>ReplWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\ReplWindowController.cs" />
+    <Compile Include="ViewModels\ReplWindowViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FSharp\FSharp.Core.optdata">
@@ -66,7 +84,12 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Page Include="Views\ReplWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="FSharp\FSharp.Compiler.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -84,6 +107,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
