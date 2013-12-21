@@ -11,15 +11,25 @@
         private readonly IReplEngine _replEngine;
         private readonly IScheduler _dispatcherScheduler;
         private readonly IScheduler _taskPoolScheduler;
+        private readonly CompositeDisposable _disposable;
 
         private IReplWindowViewModel _viewModel;
-        private IDisposable _resetDisposable;
 
         public ReplWindowController(IReplEngine replEngine = null, IScheduler dispatcherScheduler = null, IScheduler taskScheduler = null)
         {
-            _replEngine = replEngine ?? new ReplEngine();
+            _disposable = new CompositeDisposable();
+
+            _replEngine = replEngine ?? CreateEngine();
             _dispatcherScheduler = dispatcherScheduler ?? DispatcherScheduler.Current;
             _taskPoolScheduler = taskScheduler ?? TaskPoolScheduler.Default;
+        }
+
+        private IReplEngine CreateEngine()
+        {
+            var replEngine = new ReplEngine();
+            _disposable.Add(replEngine);
+
+            return replEngine;
         }
 
         public IReplWindowViewModel ViewModel
@@ -29,8 +39,7 @@
 
         public void Dispose()
         {
-            _resetDisposable.Dispose();
-            _replEngine.Dispose();
+            _disposable.Dispose();
         }
 
         private IReplWindowViewModel CreateViewModelAndStartEngine()
@@ -44,11 +53,16 @@
 
             IReplWindowViewModel viewModel = new ReplWindowViewModel(stateStream, outputStream);
 
-            _resetDisposable = viewModel.Reset
+            _disposable.Add(viewModel.Reset
                .ObserveOn(_taskPoolScheduler)
-               .Subscribe(_ => _replEngine.Reset());
+               .Subscribe(_ => _replEngine.Reset()));
 
-            _replEngine.Start();
+            _disposable.Add(viewModel.Execute
+               .ObserveOn(_taskPoolScheduler)
+               .Subscribe(x => _replEngine.Execute(x)));
+
+            _replEngine.Start("let answer = 42.00;;");
+
             return viewModel;
         }
     }

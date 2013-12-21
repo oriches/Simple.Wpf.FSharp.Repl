@@ -13,12 +13,13 @@
 
     public sealed class ReplEngine : IReplEngine
     {
+        public const string QuitLine = "#quit;;";
+        public const string LineTermination = ";;";
+
         private readonly IScheduler _scheduler;
-        private const string FSharpDirectory = @"FSharp";
-        private const string FSharpExecutable = @"fsi.exe";
-        private const string FSharpQuitLine = "#quit;;";
-        private const string FSharpScriptTermination = ";;";
-        private const string FSharpAwaitingInput = "> ";
+        private const string BinaryDirectory = @"FSharp";
+        private const string Executable = @"fsi.exe";
+        private const string AwaitingInput = "> ";
 
         private readonly string _baseWorkingDirectory;
         private readonly Subject<string> _outputStream;
@@ -44,7 +45,7 @@
 
                 _disposable.Dispose();
 
-                _process.StandardInput.WriteLine(FSharpQuitLine);
+                _process.StandardInput.WriteLine(QuitLine);
                 _process.WaitForExit();
                 _process.Dispose();
 
@@ -151,7 +152,7 @@
                 return this;
             }
 
-            if (script.EndsWith(FSharpScriptTermination))
+            if (script.EndsWith(LineTermination))
             {
                 _stateStream.OnNext(Repl.State.Executing);
             }
@@ -188,7 +189,7 @@
 
                             input += (char)readTask.Result;
 
-                            if (input == FSharpAwaitingInput)
+                            if (input == AwaitingInput)
                             {
                                 _outputStream.OnNext(input);
 
@@ -239,7 +240,7 @@
                 throw new Exception("Failed to get currrent executing directory.");
             }
 
-            return Path.Combine(Path.Combine(currrentDirectory, FSharpDirectory), FSharpExecutable);
+            return Path.Combine(Path.Combine(currrentDirectory, BinaryDirectory), Executable);
         }
 
         private string BuildWorkingDirectory()

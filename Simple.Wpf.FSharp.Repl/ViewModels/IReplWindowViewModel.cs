@@ -5,6 +5,8 @@
 
     public interface IReplWindowViewModel 
     {
-        IObservable<Unit> Reset { get; }     
+        IObservable<Unit> Reset { get; }
+
+        IObservable<string> Execute { get; }     
     }
 }

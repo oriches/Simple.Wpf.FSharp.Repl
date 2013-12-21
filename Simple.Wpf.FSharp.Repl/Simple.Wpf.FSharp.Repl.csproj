@@ -50,6 +50,9 @@
     <Reference Include="System.Reactive.Windows.Threading">
       <HintPath>..\packages\Rx-XAML.2.2.2\lib\net40\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Expression.Blend.Sdk.1.0.2\lib\net40-client\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -70,11 +73,13 @@
     <Compile Include="Commands\ReplRelayCommand.cs" />
     <Compile Include="ReplEngine.cs" />
     <Compile Include="ViewModels\ReplOuputViewModel.cs" />
+    <Compile Include="Views\Terminal.cs" />
     <Compile Include="Views\ReplWindow.xaml.cs">
       <DependentUpon>ReplWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controllers\ReplWindowController.cs" />
     <Compile Include="ViewModels\ReplWindowViewModel.cs" />
+    <Compile Include="Views\LineEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FSharp\FSharp.Core.optdata">

@@ -1,24 +1,69 @@
 ﻿<UserControl x:Class="Simple.Wpf.FSharp.Repl.Views.ReplWindow"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:Simple.Wpf.FSharp.Repl.ViewModels"
-             mc:Ignorable="d" 
+             xmlns:v="clr-namespace:Simple.Wpf.FSharp.Repl.Views"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             mc:Ignorable="d"
              d:DesignHeight="200"
              d:DesignWidth="600"
              d:DataContext="{d:DesignInstance vm:ReplWindowViewModel}">
     <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
         <Grid.RowDefinitions>
-            <RowDefinition Height="24"/>
+            <RowDefinition Height="24" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
-        <RichTextBox x:Name="OutputRichTextBox"
-                     Grid.Row="1"
-                     Grid.Column="0"
-                     VerticalScrollBarVisibility="Visible">
-        </RichTextBox>
-            
+
+        <Button x:Name="ClearButton"
+                Grid.Row="0"
+                Grid.Column="0"
+                Content="Clear"
+                Margin="5,0"
+                Command="{Binding Path=ClearCommand, Mode=OneWay}" />
+
+        <Button x:Name="ResetButton"
+                Grid.Row="0"
+                Grid.Column="2"
+                Content="Reset"
+                Margin="5,0"
+                Command="{Binding Path=ResetCommand, Mode=OneWay}" />
+
+        <TextBlock x:Name="StateTextBlock"
+                   Grid.Row="0"
+                   Grid.Column="3"
+                   Margin="5,0"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"
+                   Text="{Binding Path=State, Mode=OneWay}" />
+
+        <v:Terminal x:Name="TerminalOutput"
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4"
+                    ItemsSource="{Binding Path=Output, Mode=OneWay}"
+                    IsReadOnlyCaretVisible="False"
+                    IsReadOnly="{Binding Path=IsReadOnly, Mode=OneWay}"
+                    Prompt="{Binding Path=Prompt, Mode=OneTime}"
+                    DisplayPath="Value"
+                    IsErrorPath="IsError"
+                    VerticalScrollBarVisibility="Visible">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="LineChanged">
+                    <i:InvokeCommandAction Command="{Binding Path=ExecuteCommand, Mode=OneWay}"
+                                           CommandParameter="{Binding Path=Line, Mode=OneWay, ElementName=TerminalOutput}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </v:Terminal>
+
     </Grid>
 </UserControl>

@@ -6,14 +6,14 @@
     {
         private static readonly Regex IsErrorRegex = new Regex(@"stdin\((\d+),(\d+)\): error FS");
 
-        public string Output { get; private set; }
+        public string Value { get; private set; }
 
         public bool IsError { get; private set; }
 
-        public ReplOuputViewModel(string output)
+        public ReplOuputViewModel(string value)
         {
-            Output = output;
-            IsError = IsErrorRegex.IsMatch(output);
+            Value = value;
+            IsError = IsErrorRegex.IsMatch(value);
         }
     }
 }
