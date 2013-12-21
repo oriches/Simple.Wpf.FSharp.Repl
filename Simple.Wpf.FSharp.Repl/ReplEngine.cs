@@ -89,7 +89,8 @@
 
         public IReplEngine Start(string script = null)
         {
-            if (_stateStream.First() != Repl.State.Stopped)
+            var state = _stateStream.First();
+            if (state != Repl.State.Stopped && state != Repl.State.Unknown && state != Repl.State.Faulted)
             {
                 return this;
             }
@@ -270,6 +271,7 @@
             {
                 StartInfo =
                 {
+                    CreateNoWindow = true,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardInput = true,

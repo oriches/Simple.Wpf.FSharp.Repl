@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Diagnostics;
     using System.Linq;
     using System.Reactive;
     using System.Reactive.Disposables;
@@ -75,6 +76,8 @@
 
         private void UpdateState(State state)
         {
+            Debug.WriteLine("state = " + state);
+
             _state = state;
             OnPropertyChanged("State");
 
