@@ -63,6 +63,10 @@
 
             TextChanged += (s, e) => ScrollToEnd();
 
+            DataObject.AddPastingHandler(this, PasteCommand);
+            DataObject.AddCopyingHandler(this, CopyCommand);
+
+
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
         }
@@ -154,6 +158,32 @@
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             _collectionDisposable.Disposable = Disposable.Empty;
+        }
+
+        private void CopyCommand(object sender, DataObjectCopyingEventArgs args)
+        {
+            if (!string.IsNullOrEmpty(Selection.Text))
+            {
+                args.DataObject.SetData(typeof(string), Selection.Text);
+            }
+
+            args.CancelCommand();
+            args.Handled = true;
+        }
+
+        private void PasteCommand(object sender, DataObjectPastingEventArgs args)
+        {
+            var text = (string)args.DataObject.GetData(typeof(string));
+
+            if (!string.IsNullOrEmpty(text))
+            {
+                CaretPosition = CaretPosition.DocumentEnd;
+                _paragraph.Inlines.Add(new Run(text));
+                CaretPosition = CaretPosition.DocumentEnd;
+            }
+
+            args.CancelCommand();
+            args.Handled = true;
         }
 
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
@@ -280,25 +310,24 @@
         
         private void HandleEnterKey()
         {
-            var lastInLine = (Run)_paragraph.Inlines.ToList().Last();
-            if (Equals(lastInLine, _promptInline))
+            var inlineList = _paragraph.Inlines.ToList();
+            var promptIndex = inlineList.IndexOf(_promptInline);
+
+            var line = inlineList.Where((x, i) => i > promptIndex)
+                .Cast<Run>()
+                .Select(x => x.Text)
+                .Aggregate(string.Empty, (current, part) => current + part);
+
+            foreach (var inline in inlineList.Where((x, i) => i > promptIndex))
             {
-                Line = string.Empty;
-
-                CaretPosition = CaretPosition.DocumentEnd;
-                
-                OnLineEntered();
+                _paragraph.Inlines.Remove(inline);
             }
-            else
-            {
-                _paragraph.Inlines.Remove(lastInLine);
 
-                Line = lastInLine.Text;
-
-                CaretPosition = CaretPosition.DocumentEnd;
-                
-                OnLineEntered();
-            }
+            Line = line;
+            
+            CaretPosition = CaretPosition.DocumentEnd;
+            
+            OnLineEntered();
         }
         
         private void OnLineEntered()
