@@ -167,8 +167,7 @@
                 args.DataObject.SetData(typeof(string), Selection.Text);
             }
 
-            args.CancelCommand();
-            args.Handled = true;
+           args.Handled = true;
         }
 
         private void PasteCommand(object sender, DataObjectPastingEventArgs args)
@@ -182,8 +181,8 @@
                 CaretPosition = CaretPosition.DocumentEnd;
             }
 
-            args.CancelCommand();
-            args.Handled = true;
+           args.CancelCommand();
+           args.Handled = true;
         }
 
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)

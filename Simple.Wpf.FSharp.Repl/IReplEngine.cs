@@ -7,6 +7,8 @@
     {
         IObservable<State> State { get; }
 
+        IObservable<string> Error { get; }
+
         IObservable<string> Output { get; }
         
         IReplEngine Start(string script = null);
