@@ -11,7 +11,7 @@
         {
             // ARRANGE
             // ACT
-            var viewModel = new ReplOuputViewModel("stdin(2,1): error FS0039: The value or constructor 'sssss' is not defined");
+            var viewModel = new ReplOuputViewModel("stdin(2,1): error FS0039: The value or constructor 'sssss' is not defined", true);
 
             // ASSERT
             Assert.That(viewModel.IsError, Is.True);

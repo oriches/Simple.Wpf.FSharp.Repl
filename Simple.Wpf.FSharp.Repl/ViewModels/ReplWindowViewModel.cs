@@ -21,7 +21,7 @@
         
         private State _state;
 
-        public ReplWindowViewModel(IObservable<State> replState, IObservable<ReplOuputViewModel> replOutput)
+        public ReplWindowViewModel(IObservable<State> replState, IObservable<ReplOuputViewModel> replOutput, IObservable<ReplOuputViewModel> replError)
         {
             _state = Repl.State.Unknown;
             _output = new ObservableCollection<ReplOuputViewModel>();
@@ -37,6 +37,12 @@
             {
                 replState.Subscribe(UpdateState),
                 replOutput.Where(x => x.Value != Prompt)
+                    .Subscribe(x =>
+                    {
+                        _output.Add(x);
+                        CommandManager.InvalidateRequerySuggested();
+                    }),
+                replError.Where(x => x.Value != Prompt)
                     .Subscribe(x =>
                     {
                         _output.Add(x);

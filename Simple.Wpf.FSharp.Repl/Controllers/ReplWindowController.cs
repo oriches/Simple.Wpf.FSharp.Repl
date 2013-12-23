@@ -44,6 +44,10 @@
 
         private IReplWindowViewModel CreateViewModelAndStartEngine()
         {
+            var errorStream = _replEngine.Error
+                        .Select(x => new ReplOuputViewModel(x, true))
+                        .ObserveOn(_dispatcherScheduler);
+
             var outputStream = _replEngine.Output
                         .Select(x => new ReplOuputViewModel(x))
                         .ObserveOn(_dispatcherScheduler);
@@ -51,7 +55,7 @@
             var stateStream = _replEngine.State
                        .ObserveOn(_dispatcherScheduler);
 
-            IReplWindowViewModel viewModel = new ReplWindowViewModel(stateStream, outputStream);
+            IReplWindowViewModel viewModel = new ReplWindowViewModel(stateStream, outputStream, errorStream);
 
             _disposable.Add(viewModel.Reset
                .ObserveOn(_taskPoolScheduler)

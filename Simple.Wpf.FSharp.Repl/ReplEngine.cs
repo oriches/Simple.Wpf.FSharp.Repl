@@ -16,21 +16,19 @@
     {
         public const string QuitLine = "#quit;;";
         public const string LineTermination = ";;";
-
-        private readonly IScheduler _scheduler;
         private const string BinaryDirectory = @"FSharp";
         private const string Executable = @"fsi.exe";
         private const string AwaitingInput = "> ";
 
         private readonly string _baseWorkingDirectory;
-        private readonly Subject<string> _outputStream;
-        private readonly Subject<string> _errorStream;
+
+        private readonly IScheduler _scheduler;
+        private readonly Subject<ReplProcessOutput> _outputStream;
         private readonly BehaviorSubject<State> _stateStream;
+        private readonly CompositeDisposable _disposable;
 
         private string _startupScript;
         private ReplProcess _replProcess;
-
-        private CompositeDisposable _disposable;
 
         internal sealed class ReplProcess : IDisposable
         {
@@ -75,6 +73,19 @@
             }
         }
 
+        internal sealed class ReplProcessOutput
+        {
+            public string Output { get; private set; }
+
+            public bool IsError { get; private set; }
+
+            public ReplProcessOutput(string output, bool isError = false)
+            {
+                Output = output;
+                IsError = isError;
+            }
+        }
+
         public ReplEngine(string workingDirectory = null, IScheduler scheduler = null)
         {
             _scheduler = scheduler ?? TaskPoolScheduler.Default;
@@ -85,20 +96,18 @@
             }
 
             _stateStream = new BehaviorSubject<State>(Repl.State.Unknown);
-            _outputStream = new Subject<string>();
-            _errorStream = new Subject<string>();
+            _outputStream = new Subject<ReplProcessOutput>();
 
             _disposable = new CompositeDisposable
             {
                 _stateStream,
                 _outputStream,
-                _errorStream
             };
         }
 
-        public IObservable<string> Output { get { return _outputStream; } }
+        public IObservable<string> Output { get { return _outputStream.Where(x => !x.IsError).Select(x => x.Output); } }
 
-        public IObservable<string> Error { get { return _errorStream; } }
+        public IObservable<string> Error { get { return _outputStream.Where(x => x.IsError).Select(x => x.Output); } }
 
         public IObservable<State> State { get { return _stateStream.DistinctUntilChanged(); } }
 
@@ -134,7 +143,7 @@
             _startupScript = null;
 
             _stateStream.OnNext(Repl.State.Stopped);
-
+            
             return this;
         }
 
@@ -183,7 +192,84 @@
             _disposable.Dispose();
         }
 
-        private IObservable<Unit> StandardErrors(Process process, CancellationToken cancellationToken)
+        private ReplProcess StartProcess()
+        {
+            var process = CreateProcess(); 
+            var tokenSource = new CancellationTokenSource();
+
+            var disposable = Observable.Create<Unit>(o =>
+            {
+                process.Start();
+
+                o.OnNext(Unit.Default);
+                return Disposable.Empty;
+            })
+            .Select(_ => ObserveStandardErrors(process, tokenSource.Token))
+            .Select(_ => ObserveStandardOutput(process, tokenSource.Token))
+            .Subscribe(_ => { }, e => _stateStream.OnNext(Repl.State.Faulted));
+
+            return new ReplProcess(process, Disposable.Create(() =>
+            {
+                tokenSource.Cancel();
+                tokenSource.Dispose();
+
+                disposable.Dispose();
+            }));
+        }
+
+        private IObservable<Unit> ObserveStandardOutput(Process process, CancellationToken cancellationToken)
+        {
+            return Observable.Start(() =>
+            {
+                while (true)
+                {
+                    try
+                    {
+                        var output = string.Empty;
+                        while (true)
+                        {
+                            var readTask = process.StandardOutput.ReadAsync(cancellationToken);
+                            readTask.Wait(cancellationToken);
+
+                            output += (char)readTask.Result;
+
+                            if (output == AwaitingInput)
+                            {
+                                _outputStream.OnNext(new ReplProcessOutput(output));
+
+                                if (_stateStream.First() == Repl.State.Starting && !string.IsNullOrEmpty(_startupScript))
+                                {
+                                    _outputStream.OnNext(new ReplProcessOutput(_startupScript));
+                                    _outputStream.OnNext(new ReplProcessOutput(Environment.NewLine));
+
+                                    _stateStream.OnNext(Repl.State.Running);
+
+                                    Execute(_startupScript);
+                                }
+                                else
+                                {
+                                    _stateStream.OnNext(Repl.State.Running);
+                                }
+
+                                break;
+                            }
+
+                            if (output.EndsWith(Environment.NewLine))
+                            {
+                                _outputStream.OnNext(new ReplProcessOutput(output));
+                                break;
+                            }
+                        }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        return;
+                    }
+                }
+            }, _scheduler);
+        }
+
+        private IObservable<Unit> ObserveStandardErrors(Process process, CancellationToken cancellationToken)
         {
             return Observable.Start(() =>
             {
@@ -201,7 +287,7 @@
 
                             if (error.EndsWith(Environment.NewLine))
                             {
-                                _errorStream.OnNext(error);
+                                _outputStream.OnNext(new ReplProcessOutput(error, true));
                                 break;
                             }
                         }
@@ -212,162 +298,6 @@
                     }
                 }
             }, _scheduler);
-        }
-
-        private IObservable<Unit> StandardOutput(Process process, CancellationToken cancellationToken)
-        {
-            return Observable.Start(() =>
-            {
-                while (true)
-                {
-                    try
-                    {
-                        var input = string.Empty;
-                        while (true)
-                        {
-                            var readTask = process.StandardOutput.ReadAsync(cancellationToken);
-                            readTask.Wait(cancellationToken);
-
-                            input += (char)readTask.Result;
-
-                            if (input == AwaitingInput)
-                            {
-                                _outputStream.OnNext(input);
-
-                                if (_stateStream.First() == Repl.State.Starting && !string.IsNullOrEmpty(_startupScript))
-                                {
-                                    _outputStream.OnNext(_startupScript);
-                                    _outputStream.OnNext(Environment.NewLine);
-
-                                    _stateStream.OnNext(Repl.State.Running);
-
-                                    Execute(_startupScript);
-                                }
-                                else
-                                {
-                                    _stateStream.OnNext(Repl.State.Running);
-                                }
-
-                                break;
-                            }
-
-                            if (input.EndsWith(Environment.NewLine))
-                            {
-                                _outputStream.OnNext(input);
-                                break;
-                            }
-                        }
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        return;
-                    }
-                }
-            }, _scheduler);
-        }
-
-        private ReplProcess StartProcess()
-        {
-            var process = CreateProcess();
-            
-            var tokenSource = new CancellationTokenSource();
-
-            var disposable = Observable.Create<Unit>(o =>
-                {
-                    process.Start();
-
-                    o.OnNext(Unit.Default);
-                    return Disposable.Empty;
-                })
-                .Select(_ => StandardErrors(process, tokenSource.Token))
-                .Select(_ => StandardOutput(process, tokenSource.Token))
-                .Subscribe(_ => { }, e => _stateStream.OnNext(Repl.State.Faulted));
-
-            
-//            var errorDisposable = Observable.Start(() =>
-//            {
-//                while (true)
-//                {
-//                    try
-//                    {
-//                        var error = string.Empty;
-//                        while (true)
-//                        {
-//                            var readTask = process.StandardError.ReadAsync(tokenSource.Token);
-//                            readTask.Wait(tokenSource.Token);
-//
-//                            error += (char)readTask.Result;
-//
-//                            if (error.EndsWith(Environment.NewLine))
-//                            {
-//                                _errorStream.OnNext(error);
-//                                break;
-//                            }
-//                        }
-//                    }
-//                    catch (OperationCanceledException)
-//                    {
-//                        return;
-//                    }
-//                }
-//            }, _scheduler)
-//            .Subscribe(_ => { });
-//
-//            var standardDisposable = Observable.Start(() =>
-//            {
-//                while (true)
-//                {
-//                    try
-//                    {
-//                        var input = string.Empty;
-//                        while (true)
-//                        {
-//                            var readTask = process.StandardOutput.ReadAsync(tokenSource.Token);
-//                            readTask.Wait(tokenSource.Token);
-//
-//                            input += (char)readTask.Result;
-//
-//                            if (input == AwaitingInput)
-//                            {
-//                                _outputStream.OnNext(input);
-//
-//                                if (_stateStream.First() == Repl.State.Starting && !string.IsNullOrEmpty(_startupScript))
-//                                {
-//                                    _outputStream.OnNext(_startupScript);
-//                                    _outputStream.OnNext(Environment.NewLine);
-//
-//                                    _stateStream.OnNext(Repl.State.Running);
-//
-//                                    Execute(_startupScript);
-//                                }
-//                                else
-//                                {
-//                                    _stateStream.OnNext(Repl.State.Running);
-//                                }
-//
-//                                break;
-//                            }
-//
-//                            if (input.EndsWith(Environment.NewLine))
-//                            {
-//                                _outputStream.OnNext(input);
-//                                break;
-//                            }
-//                        }
-//                    }
-//                    catch (OperationCanceledException)
-//                    {
-//                        return;
-//                    }
-//                }
-//            }, _scheduler)
-//            .Subscribe(_ => { }, e => _stateStream.OnNext(Repl.State.Faulted));
-
-            return new ReplProcess(process, Disposable.Create(() =>
-            {
-                tokenSource.Cancel();
-                disposable.Dispose();
-            }));
         }
 
         private static string BuildExecutablePath()
@@ -420,10 +350,8 @@
                 }
             };
 
-            Debug.WriteLine("**************************");
-            Debug.WriteLine("WorkingDirectory - " + process.StartInfo.WorkingDirectory);
-            Debug.WriteLine("FileName - " + process.StartInfo.FileName);
-            Debug.WriteLine("**************************");
+            Debug.WriteLine("Working directory - " + process.StartInfo.WorkingDirectory);
+            Debug.WriteLine("File name - " + process.StartInfo.FileName);
 
             return process;
         }
