@@ -5,8 +5,6 @@
     using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.Linq;
-    using System.Reactive.Disposables;
-    using System.Reactive.Linq;
     using System.Reflection;
     using System.Windows;
     using System.Windows.Controls;
@@ -49,20 +47,19 @@
            new PropertyMetadata(new SolidColorBrush(Colors.Red)));
 
         private readonly Paragraph _paragraph;
-        private readonly SerialDisposable _collectionDisposable;
 
         private PropertyInfo _displayPathProperty;
         private PropertyInfo _isErrorPathProperty;
 
         private Run _promptInline;
-       
+        private INotifyCollectionChanged _notifyChanged;
+        private List<string> _buffer;
+
         public Terminal()
         {
+            _buffer = new List<string>();
+
             _paragraph = new Paragraph();
-            _paragraph.Margin = new Thickness(0);
-            _paragraph.LineHeight = 10;
-            
-            _collectionDisposable = new SerialDisposable();
 
             Document = new FlowDocument(_paragraph);
 
@@ -111,28 +108,50 @@
             set { SetValue(ErrorColorProperty, value); }
         }
 
-        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        protected override void OnPreviewKeyDown(KeyEventArgs args)
         {
-            base.OnPreviewKeyDown(e);
+            base.OnPreviewKeyDown(args);
 
-            if (e.Key == Key.Enter)
+            if (args.Key == Key.Enter)
             {
                 HandleEnterKey();
-                e.Handled = true;
+                args.Handled = true;
             }
-            else if (e.Key == Key.PageUp || e.Key == Key.PageDown)
+            else if (args.Key == Key.PageUp || args.Key == Key.PageDown)
             {
-                e.Handled = true;
+                args.Handled = true;
             }
-            else if (e.Key == Key.Up)
+            else if (args.Key == Key.Escape)
             {
-                e.Handled = true;
+                ClearAfterPrompt();
+                args.Handled = true;
             }
-            else if (e.Key == Key.Down)
+            else if (args.Key == Key.Down || args.Key == Key.Up)
             {
-                e.Handled = true;
+                if (_buffer.Any())
+                {
+                    ClearAfterPrompt();
+
+                    string existingLine;
+                    if (args.Key == Key.Down)
+                    {
+                        existingLine = _buffer[_buffer.Count -1];
+                        _buffer.RemoveAt(_buffer.Count - 1);
+                        _buffer.Insert(0, existingLine);
+                    }
+                    else
+                    {
+                        existingLine = _buffer[0];
+                        _buffer.RemoveAt(0);
+                        _buffer.Add(existingLine);
+                    }
+
+                    AddLine(existingLine);
+                }
+
+                args.Handled = true;
             }
-            else if (e.Key == Key.Left || e.Key == Key.Back)
+            else if (args.Key == Key.Left || args.Key == Key.Back)
             {
                 var promptEnd = _promptInline.ContentEnd;
 
@@ -141,14 +160,14 @@
                 {
                     if (CaretPosition.CompareTo(promptEnd) == 0)
                     {
-                        e.Handled = true;
+                        args.Handled = true;
                     }
                 }
                 else
                 {
                     if (CaretPosition.CompareTo(textPointer) == 0)
                     {
-                        e.Handled = true;
+                        args.Handled = true;
                     }
                 }
             }
@@ -184,14 +203,17 @@
             terminal._isErrorPathProperty = null;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        private void OnLoaded(object sender, RoutedEventArgs args)
         {
             _promptInline = new Run(Prompt);
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        private void OnUnloaded(object sender, RoutedEventArgs args)
         {
-            _collectionDisposable.Disposable = Disposable.Empty;
+            if (_notifyChanged != null)
+            {
+                _notifyChanged.CollectionChanged -= HandleValuesChanged;
+            }
         }
 
         private void CopyCommand(object sender, DataObjectCopyingEventArgs args)
@@ -210,12 +232,7 @@
 
             if (!string.IsNullOrEmpty(text))
             {
-                CaretPosition = CaretPosition.DocumentEnd;
-
-                var inline = new Run(text);
-                _paragraph.Inlines.Add(inline);
-
-                CaretPosition = CaretPosition.DocumentEnd;
+                AddLine(text);
             }
 
             args.CancelCommand();
@@ -226,24 +243,30 @@
         {
             var notifyChanged = (INotifyCollectionChanged) values;
 
-            _collectionDisposable.Disposable = Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
-                h => notifyChanged.CollectionChanged += h, h => notifyChanged.CollectionChanged -= h)
-                .Subscribe(x =>
-                    {
-                        _paragraph.Inlines.Remove(_promptInline);
+            if (_notifyChanged != null)
+            {
+                _notifyChanged.CollectionChanged += HandleValuesChanged;
+            }
 
-                        if (x.EventArgs.Action == NotifyCollectionChangedAction.Add)
-                        {
-                            AddOutputs(x.EventArgs.NewItems.Cast<object>());
-                        }
-                        else
-                        {
-                            ReplaceValues(values);
-                        }
+            _notifyChanged = notifyChanged;
+            _notifyChanged.CollectionChanged += HandleValuesChanged;
+        }
 
-                        _paragraph.Inlines.Add(_promptInline);
-                        CaretPosition = CaretPosition.DocumentEnd;
-                    });
+        private void HandleValuesChanged(object sender, NotifyCollectionChangedEventArgs args)
+        {
+            _paragraph.Inlines.Remove(_promptInline);
+
+            if (args.Action == NotifyCollectionChangedAction.Add)
+            {
+                AddOutputs(args.NewItems.Cast<object>());
+            }
+            else
+            {
+                ReplaceValues(args.NewItems);
+            }
+
+            _paragraph.Inlines.Add(_promptInline);
+            CaretPosition = CaretPosition.DocumentEnd;
         }
 
         private void ReplaceValues(IEnumerable outputs)
@@ -342,20 +365,12 @@
         
         private void HandleEnterKey()
         {
-            var inlineList = _paragraph.Inlines.ToList();
-            var promptIndex = inlineList.IndexOf(_promptInline);
+            var line = AggregateAfterPrompt();
 
-            var line = inlineList.Where((x, i) => i > promptIndex)
-                .Cast<Run>()
-                .Select(x => x.Text)
-                .Aggregate(string.Empty, (current, part) => current + part);
-
-            foreach (var inline in inlineList.Where((x, i) => i > promptIndex))
-            {
-                _paragraph.Inlines.Remove(inline);
-            }
+            ClearAfterPrompt();
 
             Line = line;
+            _buffer.Insert(0, line);
             
             CaretPosition = CaretPosition.DocumentEnd;
             
@@ -369,6 +384,38 @@
             if (handler != null)
             {
                 handler(this, EventArgs.Empty);
+            }
+        }
+
+        private void AddLine(string line)
+        {
+            CaretPosition = CaretPosition.DocumentEnd;
+
+            var inline = new Run(line);
+            _paragraph.Inlines.Add(inline);
+
+            CaretPosition = CaretPosition.DocumentEnd;
+        }
+
+        private string AggregateAfterPrompt()
+        {
+            var inlineList = _paragraph.Inlines.ToList();
+            var promptIndex = inlineList.IndexOf(_promptInline);
+
+            return inlineList.Where((x, i) => i > promptIndex)
+                .Cast<Run>()
+                .Select(x => x.Text)
+                .Aggregate(string.Empty, (current, part) => current + part);
+        }
+
+        private void ClearAfterPrompt()
+        {
+            var inlineList = _paragraph.Inlines.ToList();
+            var promptIndex = inlineList.IndexOf(_promptInline);
+
+            foreach (var inline in inlineList.Where((x, i) => i > promptIndex))
+            {
+                _paragraph.Inlines.Remove(inline);
             }
         }
     }
