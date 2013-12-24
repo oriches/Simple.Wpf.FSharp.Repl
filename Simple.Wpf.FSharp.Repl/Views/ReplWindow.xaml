@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:Simple.Wpf.FSharp.Repl.ViewModels"
-             xmlns:v="clr-namespace:Simple.Wpf.FSharp.Repl.Views"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:terminal="clr-namespace:Simple.Wpf.Terminal;assembly=Simple.Wpf.Terminal"
              mc:Ignorable="d"
              d:DesignHeight="200"
              d:DesignWidth="600"
@@ -46,28 +46,30 @@
                    VerticalAlignment="Center"
                    Text="{Binding Path=State, Mode=OneWay}" />
 
-        <v:Terminal x:Name="TerminalOutput"
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="4"
-                    IsReadOnlyCaretVisible="False"
-                    VerticalScrollBarVisibility="Visible"
-                    FontFamily="Lucida Console"
-                    Background="Black"
-                    Foreground="WhiteSmoke"
-                    ErrorColor="Red"
-                    IsReadOnly="{Binding Path=IsReadOnly, Mode=OneWay}"
-                    ItemsSource="{Binding Path=Output, Mode=OneWay}"
-                    Prompt="{Binding Path=Prompt, Mode=OneTime}"
-                    DisplayPath="Value"
-                    IsErrorPath="IsError">
+        <terminal:Terminal x:Name="TerminalOutput"
+                           Grid.Row="1"
+                           Grid.Column="0"
+                           Grid.ColumnSpan="4"
+                           IsReadOnlyCaretVisible="False"
+                           VerticalScrollBarVisibility="Visible"
+                           FontFamily="Lucida Console"
+                           Background="Black"
+                           Foreground="WhiteSmoke"
+                           IsReadOnly="{Binding Path=IsReadOnly, Mode=OneWay}"
+                           Prompt="{Binding Path=Prompt, Mode=OneTime}"
+                           ItemsSource="{Binding Path=Output, Mode=OneWay}"
+                           ItemsMargin="5"
+                           ItemErrorColor="Red"
+                           ItemDisplayPath="Value"
+                           ItemIsErrorPath="IsError"
+                           ItemHeight="10">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="LineChanged">
                     <i:InvokeCommandAction Command="{Binding Path=ExecuteCommand, Mode=OneWay}"
                                            CommandParameter="{Binding Path=Line, Mode=OneWay, ElementName=TerminalOutput}" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-        </v:Terminal>
+        </terminal:Terminal>
 
     </Grid>
 </UserControl>
