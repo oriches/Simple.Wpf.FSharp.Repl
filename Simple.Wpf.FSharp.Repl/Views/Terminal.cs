@@ -12,6 +12,7 @@
     using System.Windows.Controls;
     using System.Windows.Documents;
     using System.Windows.Input;
+    using System.Windows.Media;
 
     public sealed class Terminal : RichTextBox
     {
@@ -32,11 +33,6 @@
             typeof(Terminal),
             new PropertyMetadata(default(string), OnIsErrorPathChanged));
 
-        public static readonly DependencyProperty IsWarningPathProperty = DependencyProperty.Register("IsWarningPath",
-            typeof(string),
-            typeof(Terminal),
-            new PropertyMetadata(default(string), OnIsWarningPathChanged));
-
         public static readonly DependencyProperty LineProperty = DependencyProperty.Register("Line",
             typeof(string),
             typeof(Terminal),
@@ -47,15 +43,24 @@
             typeof(Terminal),
             new PropertyMetadata(default(string)));
 
+        public static readonly DependencyProperty ErrorColorProperty = DependencyProperty.Register("ErrorColor",
+           typeof(Brush),
+           typeof(Terminal),
+           new PropertyMetadata(new SolidColorBrush(Colors.Red)));
+
         private readonly Paragraph _paragraph;
         private readonly SerialDisposable _collectionDisposable;
 
         private PropertyInfo _displayPathProperty;
-        private Run _promptInline;
+        private PropertyInfo _isErrorPathProperty;
 
+        private Run _promptInline;
+       
         public Terminal()
         {
             _paragraph = new Paragraph();
+            _paragraph.Margin = new Thickness(0);
+            _paragraph.LineHeight = 10;
             
             _collectionDisposable = new SerialDisposable();
 
@@ -65,7 +70,6 @@
 
             DataObject.AddPastingHandler(this, PasteCommand);
             DataObject.AddCopyingHandler(this, CopyCommand);
-
 
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
@@ -89,12 +93,6 @@
             set { SetValue(IsErrorPathProperty, value); }
         }
 
-        public string IsWarningPath
-        {
-            get { return (string)GetValue(IsWarningPathProperty); }
-            set { SetValue(IsWarningPathProperty, value); }
-        }
-
         public string Line
         {
             get { return (string)GetValue(LineProperty); }
@@ -105,6 +103,12 @@
         {
             get { return (string)GetValue(PromptProperty); }
             set { SetValue(PromptProperty, value); }
+        }
+
+        public Brush ErrorColor
+        {
+            get { return (Brush)GetValue(ErrorColorProperty); }
+            set { SetValue(ErrorColorProperty, value); }
         }
 
         protected override void OnPreviewKeyDown(KeyEventArgs e)
@@ -150,41 +154,6 @@
             }
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
-        {
-            _promptInline = new Run(Prompt);
-        }
-
-        private void OnUnloaded(object sender, RoutedEventArgs e)
-        {
-            _collectionDisposable.Disposable = Disposable.Empty;
-        }
-
-        private void CopyCommand(object sender, DataObjectCopyingEventArgs args)
-        {
-            if (!string.IsNullOrEmpty(Selection.Text))
-            {
-                args.DataObject.SetData(typeof(string), Selection.Text);
-            }
-
-           args.Handled = true;
-        }
-
-        private void PasteCommand(object sender, DataObjectPastingEventArgs args)
-        {
-            var text = (string)args.DataObject.GetData(typeof(string));
-
-            if (!string.IsNullOrEmpty(text))
-            {
-                CaretPosition = CaretPosition.DocumentEnd;
-                _paragraph.Inlines.Add(new Run(text));
-                CaretPosition = CaretPosition.DocumentEnd;
-            }
-
-           args.CancelCommand();
-           args.Handled = true;
-        }
-
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
         {
             if (args.NewValue == args.OldValue)
@@ -203,6 +172,56 @@
             }
         }
 
+        private static void OnDisplayPathChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
+        {
+            var terminal = ((Terminal)d);
+            terminal._displayPathProperty = null;
+        }
+
+        private static void OnIsErrorPathChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
+        {
+            var terminal = ((Terminal)d);
+            terminal._isErrorPathProperty = null;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        {
+            _promptInline = new Run(Prompt);
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            _collectionDisposable.Disposable = Disposable.Empty;
+        }
+
+        private void CopyCommand(object sender, DataObjectCopyingEventArgs args)
+        {
+            if (!string.IsNullOrEmpty(Selection.Text))
+            {
+                args.DataObject.SetData(typeof(string), Selection.Text);
+            }
+
+            args.Handled = true;
+        }
+
+        private void PasteCommand(object sender, DataObjectPastingEventArgs args)
+        {
+            var text = (string)args.DataObject.GetData(typeof(string));
+
+            if (!string.IsNullOrEmpty(text))
+            {
+                CaretPosition = CaretPosition.DocumentEnd;
+
+                var inline = new Run(text);
+                _paragraph.Inlines.Add(inline);
+
+                CaretPosition = CaretPosition.DocumentEnd;
+            }
+
+            args.CancelCommand();
+            args.Handled = true;
+        }
+
         private void ObserveChanges(IEnumerable values)
         {
             var notifyChanged = (INotifyCollectionChanged) values;
@@ -215,7 +234,7 @@
 
                         if (x.EventArgs.Action == NotifyCollectionChangedAction.Add)
                         {
-                            AddValues(x.EventArgs.NewItems.Cast<object>());
+                            AddOutputs(x.EventArgs.NewItems.Cast<object>());
                         }
                         else
                         {
@@ -227,38 +246,30 @@
                     });
         }
 
-        private void ReplaceValues(IEnumerable values)
+        private void ReplaceValues(IEnumerable outputs)
         {
             _paragraph.Inlines.Clear();
-            AddValues(ConvertToEnumerable(values));
+            AddOutputs(ConvertToEnumerable(outputs));
 
             _paragraph.Inlines.Add(_promptInline);
             CaretPosition = CaretPosition.DocumentEnd;
         }
 
-        private void AddValues(IEnumerable values)
+        private void AddOutputs(IEnumerable outputs)
         {
-            foreach (var value in values.Cast<object>().Select(GetValueToAdd))
+            foreach (var output in outputs.Cast<object>())
             {
-                _paragraph.Inlines.Add(new Run(value));
-            }
-        }
+                var value = ExtractValue(output);
+                var isError = ExtractIsError(output);
 
-        private string GetValueToAdd(object addValue)
-        {
-            var displayPath = DisplayPath;
-            if (displayPath == null)
-            {
-                return addValue == null ? string.Empty : addValue.ToString();
-            }
+                var inline = new Run(value);
+                if (isError)
+                {
+                    inline.Foreground = ErrorColor;
+                }
 
-            if (_displayPathProperty == null)
-            {
-                _displayPathProperty = addValue.GetType().GetProperty(displayPath);
+                _paragraph.Inlines.Add(inline);
             }
-
-            var value = _displayPathProperty.GetValue(addValue, null);
-            return value == null ? string.Empty : value.ToString();
         }
 
         private static IEnumerable<object> ConvertToEnumerable(object values)
@@ -271,18 +282,6 @@
             {
                 return Enumerable.Empty<object>();
             }   
-        }
-
-        private static void OnDisplayPathChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
-        {
-        }
-
-        private static void OnIsErrorPathChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
-        {
-        }
-
-        private static void OnIsWarningPathChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
-        {
         }
 
         private static TextPointer GetTextPointer(TextPointer textPointer, LogicalDirection direction)
@@ -305,6 +304,40 @@
             }
 
             return null;
+        }
+
+        private string ExtractValue(object output)
+        {
+            var displayPath = DisplayPath;
+            if (displayPath == null)
+            {
+                return output == null ? string.Empty : output.ToString();
+            }
+
+            if (_displayPathProperty == null)
+            {
+                _displayPathProperty = output.GetType().GetProperty(displayPath);
+            }
+
+            var value = _displayPathProperty.GetValue(output, null);
+            return value == null ? string.Empty : value.ToString();
+        }
+
+        private bool ExtractIsError(object output)
+        {
+            var isErrorPath = IsErrorPath;
+            if (isErrorPath == null)
+            {
+                return false;
+            }
+
+            if (_isErrorPathProperty == null)
+            {
+                _isErrorPathProperty = output.GetType().GetProperty(isErrorPath);
+            }
+
+            var value = _isErrorPathProperty.GetValue(output, null);
+            return (bool)value;
         }
         
         private void HandleEnterKey()
