@@ -10,7 +10,8 @@
              d:DesignHeight="200"
              d:DesignWidth="600"
              d:DataContext="{d:DesignInstance vm:ReplWindowViewModel}">
-    <Grid>
+    <Grid Margin="5"
+          Background="LightGray">
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -20,7 +21,7 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="24" />
+            <RowDefinition Height="34" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -28,14 +29,14 @@
                 Grid.Row="0"
                 Grid.Column="0"
                 Content="Clear"
-                Margin="5,0"
+                Margin="5,5"
                 Command="{Binding Path=ClearCommand, Mode=OneWay}" />
 
         <Button x:Name="ResetButton"
                 Grid.Row="0"
                 Grid.Column="2"
                 Content="Reset"
-                Margin="5,0"
+                Margin="5,5"
                 Command="{Binding Path=ResetCommand, Mode=OneWay}" />
 
         <TextBlock x:Name="StateTextBlock"
@@ -46,30 +47,35 @@
                    VerticalAlignment="Center"
                    Text="{Binding Path=State, Mode=OneWay}" />
 
-        <terminal:Terminal x:Name="TerminalOutput"
-                           Grid.Row="1"
-                           Grid.Column="0"
-                           Grid.ColumnSpan="4"
-                           IsReadOnlyCaretVisible="False"
-                           VerticalScrollBarVisibility="Visible"
-                           FontFamily="Lucida Console"
-                           Background="Black"
-                           Foreground="WhiteSmoke"
-                           IsReadOnly="{Binding Path=IsReadOnly, Mode=OneWay}"
-                           Prompt="{Binding Path=Prompt, Mode=OneTime}"
-                           ItemsSource="{Binding Path=Output, Mode=OneWay}"
-                           ItemsMargin="5"
-                           ItemErrorColor="Red"
-                           ItemDisplayPath="Value"
-                           ItemIsErrorPath="IsError"
-                           ItemHeight="10">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="LineEntered">
-                    <i:InvokeCommandAction Command="{Binding Path=ExecuteCommand, Mode=OneWay}"
-                                           CommandParameter="{Binding Path=Line, Mode=OneWay, ElementName=TerminalOutput}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </terminal:Terminal>
+        <Border x:Name="TerminalBorder"
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="4"
+                Background="DarkGray"
+                Padding="5">
 
+            <terminal:Terminal x:Name="TerminalOutput"
+                               IsReadOnlyCaretVisible="False"
+                               VerticalScrollBarVisibility="Visible"
+                               FontFamily="Lucida Console"
+                               Background="Black"
+                               Foreground="WhiteSmoke"
+                               IsReadOnly="{Binding Path=IsReadOnly, Mode=OneWay}"
+                               Prompt="{Binding Path=Prompt, Mode=OneTime}"
+                               ItemsSource="{Binding Path=Output, Mode=OneWay}"
+                               ItemsMargin="5"
+                               ItemErrorColor="Red"
+                               ItemDisplayPath="Value"
+                               ItemIsErrorPath="IsError"
+                               ItemHeight="10">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="LineEntered">
+                        <i:InvokeCommandAction Command="{Binding Path=ExecuteCommand, Mode=OneWay}"
+                                               CommandParameter="{Binding Path=Line, Mode=OneWay, ElementName=TerminalOutput}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </terminal:Terminal>
+
+        </Border>
     </Grid>
 </UserControl>
