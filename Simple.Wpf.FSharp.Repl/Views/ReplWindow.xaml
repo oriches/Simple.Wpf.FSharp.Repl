@@ -68,6 +68,7 @@
                                ItemDisplayPath="Value"
                                ItemIsErrorPath="IsError"
                                ItemHeight="10">
+                
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="LineEntered">
                         <i:InvokeCommandAction Command="{Binding Path=ExecuteCommand, Mode=OneWay}"
