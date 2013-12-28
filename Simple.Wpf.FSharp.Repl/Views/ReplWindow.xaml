@@ -30,6 +30,9 @@
                 Grid.Column="0"
                 Content="Clear"
                 Margin="5,5"
+                Padding="5,0"
+                FocusManager.IsFocusScope="false"
+                FocusManager.FocusedElement="{Binding ElementName=TerminalOutput}"
                 Command="{Binding Path=ClearCommand, Mode=OneWay}" />
 
         <Button x:Name="ResetButton"
@@ -37,6 +40,9 @@
                 Grid.Column="2"
                 Content="Reset"
                 Margin="5,5"
+                Padding="5,0"
+                FocusManager.IsFocusScope="false"
+                FocusManager.FocusedElement="{Binding ElementName=TerminalOutput}"
                 Command="{Binding Path=ResetCommand, Mode=OneWay}" />
 
         <TextBlock x:Name="StateTextBlock"
