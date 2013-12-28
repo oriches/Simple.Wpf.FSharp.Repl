@@ -76,7 +76,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\ReplRelayCommand.cs" />
     <Compile Include="ReplEngine.cs" />
-    <Compile Include="ViewModels\ReplOuputViewModel.cs" />
+    <Compile Include="ViewModels\ReplLineViewModel.cs" />
     <Compile Include="Views\ReplWindow.xaml.cs">
       <DependentUpon>ReplWindow.xaml</DependentUpon>
     </Compile>

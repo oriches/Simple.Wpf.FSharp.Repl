@@ -12,7 +12,7 @@
     using System.Threading;
     using Extensions;
 
-    public sealed class ReplEngine : IReplEngine
+    public sealed class ReplEngine : IReplEngine, IDisposable
     {
         public const string QuitLine = "#quit;;";
         public const string LineTermination = ";;";

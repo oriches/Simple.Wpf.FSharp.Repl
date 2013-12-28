@@ -45,11 +45,11 @@
         private IReplWindowViewModel CreateViewModelAndStartEngine()
         {
             var errorStream = _replEngine.Error
-                        .Select(x => new ReplOuputViewModel(x, true))
+                        .Select(x => new ReplLineViewModel(x, true))
                         .ObserveOn(_dispatcherScheduler);
 
             var outputStream = _replEngine.Output
-                        .Select(x => new ReplOuputViewModel(x))
+                        .Select(x => new ReplLineViewModel(x))
                         .ObserveOn(_dispatcherScheduler);
 
             var stateStream = _replEngine.State

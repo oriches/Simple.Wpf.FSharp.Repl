@@ -3,7 +3,7 @@
     using System;
 
 
-    public interface IReplEngine : IDisposable
+    public interface IReplEngine
     {
         IObservable<State> State { get; }
 

@@ -15,16 +15,16 @@
     public sealed class ReplWindowViewModel : BaseViewModel, IReplWindowViewModel, IDisposable
     {
         private readonly CompositeDisposable _disposable;
-        private readonly ObservableCollection<ReplOuputViewModel> _output;
+        private readonly ObservableCollection<ReplLineViewModel> _output;
         private readonly Subject<Unit> _reset;
         private readonly Subject<string> _execute;
         
         private State _state;
 
-        public ReplWindowViewModel(IObservable<State> replState, IObservable<ReplOuputViewModel> replOutput, IObservable<ReplOuputViewModel> replError)
+        public ReplWindowViewModel(IObservable<State> replState, IObservable<ReplLineViewModel> replOutput, IObservable<ReplLineViewModel> replError)
         {
             _state = Repl.State.Unknown;
-            _output = new ObservableCollection<ReplOuputViewModel>();
+            _output = new ObservableCollection<ReplLineViewModel>();
 
             _reset = new Subject<Unit>();
             _execute = new Subject<string>();
@@ -35,6 +35,14 @@
 
             _disposable = new CompositeDisposable
             {
+                Disposable.Create(() =>
+                                  {
+                                        ClearCommand = null;
+                                        ResetCommand = null;
+                                        ExecuteCommand = null;
+                                  }),
+                _reset,
+                _execute,
                 replState.Subscribe(UpdateState),
                 replOutput.Where(x => x.Value != Prompt)
                     .Subscribe(x =>
@@ -59,7 +67,7 @@
 
         public IObservable<string> Execute { get { return _execute; } }
 
-        public IEnumerable<ReplOuputViewModel> Output { get { return _output; } }
+        public IEnumerable<ReplLineViewModel> Output { get { return _output; } }
 
         public ICommand ClearCommand { get; private set; }
 
@@ -67,21 +75,10 @@
 
         public ICommand ExecuteCommand { get; private set; }
 
-        public bool IsReadOnly
-        {
-            get
-            {
-                return _state == Repl.State.Executing;
-            }
-        }
+        public bool IsReadOnly { get { return _state == Repl.State.Executing; } }
 
         public void Dispose()
         {
-            ClearCommand = null;
-            ResetCommand = null;
-            ExecuteCommand = null;
-
-            _reset.Dispose();
             _disposable.Dispose();
         }
 
@@ -119,7 +116,7 @@
                 preparedLine += Environment.NewLine;
             }
 
-            _output.Add(new ReplOuputViewModel(Prompt + preparedLine));
+            _output.Add(new ReplLineViewModel(Prompt + preparedLine));
 
             _execute.OnNext(preparedLine);
         }
