@@ -61,7 +61,7 @@
 
         public string Prompt { get { return "> "; } }
 
-        public string State { get { return _state.ToString(); } }
+        public string State { get { return  _state == Repl.State.Executing ? "Executing" : string.Empty; } }
 
         public IObservable<Unit> Reset { get { return _reset; } }
 
@@ -126,8 +126,8 @@
             Debug.WriteLine("state = " + state);
 
             _state = state;
-            OnPropertyChanged("State");
             OnPropertyChanged("IsReadOnly");
+            OnPropertyChanged("State");
 
             // Enable\Disable commands etc...
         }

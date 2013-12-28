@@ -242,9 +242,8 @@
                                     _outputStream.OnNext(new ReplProcessOutput(_startupScript));
                                     _outputStream.OnNext(new ReplProcessOutput(Environment.NewLine));
 
-                                    _stateStream.OnNext(Repl.State.Running);
-
-                                    Execute(_startupScript);
+                                    _stateStream.OnNext(Repl.State.Executing);
+                                    _replProcess.WriteLine(_startupScript);
                                 }
                                 else
                                 {
