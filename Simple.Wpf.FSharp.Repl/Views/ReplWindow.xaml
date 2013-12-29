@@ -10,45 +10,59 @@
              d:DesignHeight="200"
              d:DesignWidth="600"
              d:DataContext="{d:DesignInstance vm:ReplWindowViewModel}">
+    
+    <UserControl.Resources>
+        
+    </UserControl.Resources>
+    
     <Grid Margin="5"
-          Background="LightGray">
+          Style="{DynamicResource TerminalGridStyle}">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="5" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="34" />
+            <RowDefinition Height="25" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Button x:Name="ClearButton"
-                Grid.Row="0"
-                Grid.Column="0"
-                Content="Clear"
-                Margin="5,5"
-                Padding="5,0"
-                FocusManager.IsFocusScope="false"
-                FocusManager.FocusedElement="{Binding ElementName=TerminalOutput}"
-                Command="{Binding Path=ClearCommand, Mode=OneWay}" />
+        <StackPanel x:Name="Buttons"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Orientation="Horizontal"
+                    Style="{DynamicResource TerminalButtonsStackPanelStyle}"
+                    VerticalAlignment="Bottom"
+                    Margin="5,0">
 
-        <Button x:Name="ResetButton"
-                Grid.Row="0"
-                Grid.Column="2"
-                Content="Reset"
-                Margin="5,5"
-                Padding="5,0"
-                FocusManager.IsFocusScope="false"
-                FocusManager.FocusedElement="{Binding ElementName=TerminalOutput}"
-                Command="{Binding Path=ResetCommand, Mode=OneWay}" />
+            <Button x:Name="ClearButton"
+                    Height="20"
+                    Content="Clear"
+                    Margin="0,0,5,0"
+                    Style="{DynamicResource TerminalButtonStyle}"
+                    FocusManager.IsFocusScope="false"
+                    FocusManager.FocusedElement="{Binding ElementName=TerminalOutput}"
+                    Command="{Binding Path=ClearCommand, Mode=OneWay}">
+            </Button>
+            
+            <Button x:Name="ResetButton"
+                    Height="20"
+                    Padding="5,0"
+                    Content="Reset"
+                    Style="{DynamicResource TerminalButtonStyle}"
+                    FocusManager.IsFocusScope="false"
+                    FocusManager.FocusedElement="{Binding ElementName=TerminalOutput}"
+                    Command="{Binding Path=ResetCommand, Mode=OneWay}">
+            </Button>
+
+        </StackPanel>
 
         <TextBlock x:Name="StateTextBlock"
                    Grid.Row="0"
-                   Grid.Column="3"
+                   Grid.Column="1"
                    Margin="5,0"
+                   Style="{DynamicResource TerminalTextBlockStyle}"
                    HorizontalAlignment="Right"
                    VerticalAlignment="Center"
                    Text="{Binding Path=State, Mode=OneWay}" />
@@ -56,25 +70,20 @@
         <Border x:Name="TerminalBorder"
                 Grid.Row="1"
                 Grid.Column="0"
-                Grid.ColumnSpan="4"
-                Background="DarkGray"
-                Padding="5">
+                Grid.ColumnSpan="2"
+                Padding="5"
+                Style="{DynamicResource TerminalBorderStyle}">
 
             <terminal:Terminal x:Name="TerminalOutput"
                                IsReadOnlyCaretVisible="False"
                                VerticalScrollBarVisibility="Visible"
-                               FontFamily="Lucida Console"
-                               Background="Black"
-                               Foreground="WhiteSmoke"
+                               Style="{DynamicResource TerminalStyle}"
                                IsReadOnly="{Binding Path=IsReadOnly, Mode=OneWay}"
                                Prompt="{Binding Path=Prompt, Mode=OneTime}"
                                ItemsSource="{Binding Path=Output, Mode=OneWay}"
-                               ItemsMargin="5"
-                               ItemErrorColor="Red"
                                ItemDisplayPath="Value"
-                               ItemIsErrorPath="IsError"
-                               ItemHeight="10">
-                
+                               ItemIsErrorPath="IsError">
+
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="LineEntered">
                         <i:InvokeCommandAction Command="{Binding Path=ExecuteCommand, Mode=OneWay}"
