@@ -45,11 +45,11 @@
             {
                 var workingDirectory = _process.StartInfo.WorkingDirectory;
 
-                _disposable.Dispose();
-
                 _process.StandardInput.WriteLine(QuitLine);
                 _process.WaitForExit();
                 _process.Dispose();
+
+                _disposable.Dispose();
 
                 SafeDirectoryDelete(workingDirectory);
             }
@@ -221,48 +221,41 @@
         {
             return Observable.Start(() =>
             {
-                while (true)
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    try
+                    var output = string.Empty;
+                    while (!cancellationToken.IsCancellationRequested)
                     {
-                        var output = string.Empty;
-                        while (true)
+                        var readTask = process.StandardOutput.ReadAsync(cancellationToken);
+                        readTask.Wait(cancellationToken);
+
+                        output += (char)readTask.Result;
+
+                        if (output == AwaitingInput)
                         {
-                            var readTask = process.StandardOutput.ReadAsync(cancellationToken);
-                            readTask.Wait(cancellationToken);
+                            _outputStream.OnNext(new ReplProcessOutput(output));
 
-                            output += (char)readTask.Result;
-
-                            if (output == AwaitingInput)
+                            if (_stateStream.First() == Repl.State.Starting && !string.IsNullOrEmpty(_startupScript))
                             {
-                                _outputStream.OnNext(new ReplProcessOutput(output));
+                                _outputStream.OnNext(new ReplProcessOutput(_startupScript));
+                                _outputStream.OnNext(new ReplProcessOutput(Environment.NewLine));
 
-                                if (_stateStream.First() == Repl.State.Starting && !string.IsNullOrEmpty(_startupScript))
-                                {
-                                    _outputStream.OnNext(new ReplProcessOutput(_startupScript));
-                                    _outputStream.OnNext(new ReplProcessOutput(Environment.NewLine));
-
-                                    _stateStream.OnNext(Repl.State.Executing);
-                                    _replProcess.WriteLine(_startupScript);
-                                }
-                                else
-                                {
-                                    _stateStream.OnNext(Repl.State.Running);
-                                }
-
-                                break;
+                                _stateStream.OnNext(Repl.State.Executing);
+                                _replProcess.WriteLine(_startupScript);
+                            }
+                            else
+                            {
+                                _stateStream.OnNext(Repl.State.Running);
                             }
 
-                            if (output.EndsWith(Environment.NewLine))
-                            {
-                                _outputStream.OnNext(new ReplProcessOutput(output));
-                                break;
-                            }
+                            break;
                         }
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        return;
+
+                        if (output.EndsWith(Environment.NewLine))
+                        {
+                            _outputStream.OnNext(new ReplProcessOutput(output));
+                            break;
+                        }
                     }
                 }
             }, _scheduler);
@@ -272,28 +265,21 @@
         {
             return Observable.Start(() =>
             {
-                while (true)
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    try
+                    var error = string.Empty;
+                    while (!cancellationToken.IsCancellationRequested)
                     {
-                        var error = string.Empty;
-                        while (true)
+                        var readTask = process.StandardError.ReadAsync(cancellationToken);
+                        readTask.Wait(cancellationToken);
+
+                        error += (char)readTask.Result;
+
+                        if (error.EndsWith(Environment.NewLine))
                         {
-                            var readTask = process.StandardError.ReadAsync(cancellationToken);
-                            readTask.Wait(cancellationToken);
-
-                            error += (char)readTask.Result;
-
-                            if (error.EndsWith(Environment.NewLine))
-                            {
-                                _outputStream.OnNext(new ReplProcessOutput(error, true));
-                                break;
-                            }
+                            _outputStream.OnNext(new ReplProcessOutput(error, true));
+                            break;
                         }
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        return;
                     }
                 }
             }, _scheduler);

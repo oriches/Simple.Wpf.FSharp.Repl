@@ -84,12 +84,40 @@
                                ItemDisplayPath="Value"
                                ItemIsErrorPath="IsError">
 
+                <terminal:Terminal.InputBindings>
+                    <KeyBinding Command="{Binding Path=ClearCommand, Mode=OneWay}"
+                                Gesture="CTRL+E" />
+                    <KeyBinding Command="{Binding Path=ResetCommand, Mode=OneWay}"
+                                Gesture="CTRL+R" />
+                    <KeyBinding Command="{x:Null}"
+                                Gesture="CTRL+L" />
+                </terminal:Terminal.InputBindings>
+
+                <terminal:Terminal.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Clear"
+                                  InputGestureText="Ctrl+E"
+                                  Command="{Binding Path=ClearCommand, Mode=OneWay}" />
+                        <MenuItem Header="Reset"
+                                  InputGestureText="Ctrl+R"
+                                  Command="{Binding Path=ResetCommand, Mode=OneWay}" />
+                        <Separator />
+                        <MenuItem Header="Clear"
+                                  InputGestureText="Ctrl+E"
+                                  Command="{Binding Path=ClearCommand, Mode=OneWay}" />
+                        <MenuItem Header="Reset"
+                                  InputGestureText="Ctrl+R"
+                                  Command="{Binding Path=ResetCommand, Mode=OneWay}" />
+                    </ContextMenu>
+                </terminal:Terminal.ContextMenu>
+                
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="LineEntered">
                         <i:InvokeCommandAction Command="{Binding Path=ExecuteCommand, Mode=OneWay}"
                                                CommandParameter="{Binding Path=Line, Mode=OneWay, ElementName=TerminalOutput}" />
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
+                
             </terminal:Terminal>
 
         </Border>
