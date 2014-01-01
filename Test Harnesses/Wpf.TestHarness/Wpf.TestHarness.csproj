@@ -34,9 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Simple.Wpf.Terminal, Version=1.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Simple.Wpf.Terminal, Version=1.8.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Simple.Wpf.Terminal.1.7.0.0\lib\net40\Simple.Wpf.Terminal.dll</HintPath>
+      <HintPath>..\..\..\Simple.Wpf.Terminal\Simple.Wpf.Terminal\bin\Release\Simple.Wpf.Terminal.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
