@@ -10,6 +10,7 @@
         {
             InitializeComponent();
 
+            ThemeControl.Scope = ReplWindow;
             ThemeControl.ItemsSource = new[]
             {
                 new Theme("Default theme", null), 

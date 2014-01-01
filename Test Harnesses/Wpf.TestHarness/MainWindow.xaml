@@ -21,8 +21,9 @@
         <themes:Themes x:Name="ThemeControl"
                        Margin="5"
                        Grid.Row="0" />
-        
-        <v:ReplWindow Grid.Row="1"
+
+        <v:ReplWindow x:Name="ReplWindow"
+                      Grid.Row="1"
                       DataContext="{Binding Path=Content, Mode=OneWay}" />
         
     </Grid>
