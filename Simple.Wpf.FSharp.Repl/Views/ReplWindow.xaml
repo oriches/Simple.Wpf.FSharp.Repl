@@ -102,12 +102,12 @@
                                   InputGestureText="Ctrl+R"
                                   Command="{Binding Path=ResetCommand, Mode=OneWay}" />
                         <Separator />
-                        <MenuItem Header="Clear"
-                                  InputGestureText="Ctrl+E"
-                                  Command="{Binding Path=ClearCommand, Mode=OneWay}" />
-                        <MenuItem Header="Reset"
-                                  InputGestureText="Ctrl+R"
-                                  Command="{Binding Path=ResetCommand, Mode=OneWay}" />
+                        <MenuItem Header="Copy"
+                                  InputGestureText="Ctrl+C"
+                                  Command="ApplicationCommands.Copy"/>
+                        <MenuItem Header="Paste"
+                                  InputGestureText="Ctrl+V"
+                                  Command="ApplicationCommands.Paste" />
                     </ContextMenu>
                 </terminal:Terminal.ContextMenu>
                 
