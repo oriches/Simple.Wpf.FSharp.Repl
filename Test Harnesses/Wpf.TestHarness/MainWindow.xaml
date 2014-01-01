@@ -5,14 +5,25 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:vm="clr-namespace:Wpf.TestHarness"
         xmlns:v="clr-namespace:Simple.Wpf.FSharp.Repl.Views;assembly=Simple.Wpf.FSharp.Repl"
+        xmlns:themes="clr-namespace:Simple.Wpf.Themes;assembly=Simple.Wpf.Themes"
         Title="MainWindow"
         mc:Ignorable="d"
         Height="350"
         Width="525"
         d:DataContext="{d:DesignInstance vm:MainViewModel}">
-    <Grid >
+    <Grid>
         
-        <v:ReplWindow DataContext="{Binding Path=Content, Mode=OneWay}" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <themes:Themes x:Name="ThemeControl"
+                       Margin="5"
+                       Grid.Row="0" />
+        
+        <v:ReplWindow Grid.Row="1"
+                      DataContext="{Binding Path=Content, Mode=OneWay}" />
         
     </Grid>
 </Window>
