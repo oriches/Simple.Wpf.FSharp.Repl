@@ -14,8 +14,8 @@
             ThemeControl.ItemsSource = new[]
             {
                 new Theme("Default theme", null), 
-                new Theme("Blue theme", new Uri("/Wpf.TestHarness;component/Themes/BlueTheme.xaml", UriKind.Relative)), 
-                new Theme("Dark theme", new Uri("/Wpf.TestHarness;component/Themes/DarkTheme.xaml", UriKind.Relative)), 
+                new Theme("Blue theme", new Uri("/Simple.Wpf.Terminal.Themes;component/BlueTheme.xaml", UriKind.Relative)), 
+                new Theme("Dark theme", new Uri("/Simple.Wpf.Terminal.Themes;component/DarkTheme.xaml", UriKind.Relative)), 
                 new Theme("Wingding theme", new Uri("/Wpf.TestHarness;component/Themes/WingdingTheme.xaml", UriKind.Relative)), 
             };
         }
