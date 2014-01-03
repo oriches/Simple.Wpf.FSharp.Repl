@@ -34,12 +34,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Simple.Wpf.Terminal, Version=1.10.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Simple.Wpf.Terminal, Version=1.11.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Simple.Wpf.Terminal.1.10.0.0\lib\net40\Simple.Wpf.Terminal.dll</HintPath>
+      <HintPath>..\..\packages\Simple.Wpf.Terminal.1.11.0.0\lib\net40\Simple.Wpf.Terminal.dll</HintPath>
     </Reference>
-    <Reference Include="Simple.Wpf.Terminal.Themes">
-      <HintPath>..\..\packages\Simple.Wpf.Terminal.1.10.0.0\lib\net40\Simple.Wpf.Terminal.Themes.dll</HintPath>
+    <Reference Include="Simple.Wpf.Terminal.Themes, Version=1.10.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Simple.Wpf.Terminal.1.11.0.0\lib\net40\Simple.Wpf.Terminal.Themes.dll</HintPath>
     </Reference>
     <Reference Include="Simple.Wpf.Themes">
       <HintPath>..\..\packages\Simple.Wpf.Themes.1.4.0.0\lib\net40\Simple.Wpf.Themes.dll</HintPath>
@@ -94,6 +95,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Themes\BlueTheme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\DarkTheme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Themes\WingdingTheme.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
