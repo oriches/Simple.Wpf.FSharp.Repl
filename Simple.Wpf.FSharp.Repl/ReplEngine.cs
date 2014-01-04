@@ -17,12 +17,14 @@
         public const string QuitLine = "#quit;;";
         public const string LineTermination = ";;";
         private const string BinaryDirectory = @"FSharp";
-        private const string Executable = @"fsi.exe";
+        private const string Executable32Bit = @"fsi.exe";
+        private const string ExecutableAnyCpu = @"fsiAnyCpu.exe";
         private const string AwaitingInput = "> ";
 
         private readonly string _baseWorkingDirectory;
 
         private readonly IScheduler _scheduler;
+        private readonly bool _anyCpu;
         private readonly Subject<ReplProcessOutput> _outputStream;
         private readonly BehaviorSubject<State> _stateStream;
         private readonly CompositeDisposable _disposable;
@@ -86,8 +88,10 @@
             }
         }
 
-        public ReplEngine(string workingDirectory = null, IScheduler scheduler = null)
+        public ReplEngine(string workingDirectory = null, IScheduler scheduler = null, bool anyCpu = true)
         {
+            _scheduler = scheduler;
+            _anyCpu = anyCpu;
             _scheduler = scheduler ?? TaskPoolScheduler.Default;
 
             if (!string.IsNullOrWhiteSpace(workingDirectory))
@@ -285,7 +289,7 @@
             }, _scheduler);
         }
 
-        private static string BuildExecutablePath()
+        private string BuildExecutablePath()
         {
             var currrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             if (currrentDirectory == null)
@@ -293,7 +297,8 @@
                 throw new Exception("Failed to get currrent executing directory.");
             }
 
-            return Path.Combine(Path.Combine(currrentDirectory, BinaryDirectory), Executable);
+            var execute = _anyCpu ? ExecutableAnyCpu : Executable32Bit;
+            return Path.Combine(Path.Combine(currrentDirectory, BinaryDirectory), execute);
         }
 
         private string BuildWorkingDirectory()
