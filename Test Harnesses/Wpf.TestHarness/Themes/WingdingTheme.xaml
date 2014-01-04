@@ -55,7 +55,7 @@
            TargetType="{x:Type TextBlock}"
            BasedOn="{x:Null}">
         <Setter Property="Foreground"
-                Value="WhiteSmoke" />
+                Value="Orange" />
         <Setter Property="FontStyle"
                 Value="Italic" />
     </Style>

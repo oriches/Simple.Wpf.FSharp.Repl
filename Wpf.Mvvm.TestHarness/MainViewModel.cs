@@ -9,7 +9,7 @@
 
         public MainViewModel()
         {
-            _controller = new ReplWindowController();
+            _controller = new ReplWindowController("let ollie = 1337;;");
         }
 
         public IReplWindowViewModel Content { get { return _controller.ViewModel; } }

@@ -8,6 +8,7 @@
 
     public sealed class ReplWindowController : IReplWindowController, IDisposable
     {
+        private readonly string _startupScript;
         private readonly IReplEngine _replEngine;
         private readonly IScheduler _dispatcherScheduler;
         private readonly IScheduler _taskPoolScheduler;
@@ -15,8 +16,9 @@
 
         private IReplWindowViewModel _viewModel;
 
-        public ReplWindowController(IReplEngine replEngine = null, IScheduler dispatcherScheduler = null, IScheduler taskScheduler = null)
+        public ReplWindowController(string startupScript = null, IReplEngine replEngine = null, IScheduler dispatcherScheduler = null, IScheduler taskScheduler = null)
         {
+            _startupScript = startupScript;
             _disposable = new CompositeDisposable();
 
             _replEngine = replEngine ?? CreateEngine();
@@ -65,7 +67,7 @@
                .ObserveOn(_taskPoolScheduler)
                .Subscribe(x => _replEngine.Execute(x)));
 
-            _replEngine.Start("let answer = 42.00;;");
+            _replEngine.Start(_startupScript);
 
             return viewModel;
         }
