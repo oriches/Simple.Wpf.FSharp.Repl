@@ -16,7 +16,10 @@
 
         private IReplWindowViewModel _viewModel;
 
-        public ReplWindowController(string startupScript = null, IReplEngine replEngine = null, IScheduler dispatcherScheduler = null, IScheduler taskScheduler = null)
+        public ReplWindowController(string startupScript = null,
+            IReplEngine replEngine = null,
+            IScheduler dispatcherScheduler = null,
+            IScheduler taskScheduler = null)
         {
             _startupScript = startupScript;
             _disposable = new CompositeDisposable();

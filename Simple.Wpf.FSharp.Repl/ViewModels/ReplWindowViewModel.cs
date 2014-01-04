@@ -128,8 +128,6 @@
             _state = state;
             OnPropertyChanged("IsReadOnly");
             OnPropertyChanged("State");
-
-            // Enable\Disable commands etc...
         }
     }
 }

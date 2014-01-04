@@ -2,7 +2,6 @@
 {
     using System;
 
-
     public interface IReplEngine
     {
         IObservable<State> State { get; }
