@@ -1,4 +1,4 @@
-﻿namespace Wpf.TestHarness
+﻿namespace Wpf.Mvvm.TestHarness
 {
     using Simple.Wpf.FSharp.Repl.Controllers;
     using Simple.Wpf.FSharp.Repl.ViewModels;

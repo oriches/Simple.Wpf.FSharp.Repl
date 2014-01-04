@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console.TestHarness", "Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wpf.TestHarness", "Test Harnesses\Wpf.TestHarness\Wpf.TestHarness.csproj", "{9132A2EA-3518-429C-89CF-29955B82C9A5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wpf.Mvvm.TestHarness", "Wpf.Mvvm.TestHarness\Wpf.Mvvm.TestHarness.csproj", "{79332DF0-9D86-412D-B7BF-1FEF2D5FC2BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{9132A2EA-3518-429C-89CF-29955B82C9A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9132A2EA-3518-429C-89CF-29955B82C9A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9132A2EA-3518-429C-89CF-29955B82C9A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79332DF0-9D86-412D-B7BF-1FEF2D5FC2BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79332DF0-9D86-412D-B7BF-1FEF2D5FC2BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79332DF0-9D86-412D-B7BF-1FEF2D5FC2BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79332DF0-9D86-412D-B7BF-1FEF2D5FC2BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,5 +48,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{D310454E-186F-46BB-B78A-0FC09B25B90D} = {64B09741-7D89-4C6B-8AC6-19A944126CD7}
 		{9132A2EA-3518-429C-89CF-29955B82C9A5} = {64B09741-7D89-4C6B-8AC6-19A944126CD7}
+		{79332DF0-9D86-412D-B7BF-1FEF2D5FC2BF} = {64B09741-7D89-4C6B-8AC6-19A944126CD7}
 	EndGlobalSection
 EndGlobal

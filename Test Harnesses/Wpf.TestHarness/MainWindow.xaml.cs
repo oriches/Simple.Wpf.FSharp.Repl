@@ -2,6 +2,9 @@
 {
     using System;
     using System.Windows;
+    using System.Windows.Controls;
+    using Simple.Wpf.FSharp.Repl.Controllers;
+    using Simple.Wpf.FSharp.Repl.Views;
     using Simple.Wpf.Themes;
 
     public partial class MainWindow : Window
@@ -10,7 +13,9 @@
         {
             InitializeComponent();
 
-            ThemeControl.Scope = ReplWindow;
+            ReplWindowControl.DataContext = new ReplWindowController().ViewModel;
+            
+            ThemeControl.Scope = ReplWindowControl;
             ThemeControl.ItemsSource = new[]
             {
                 new Theme("Default theme", null), 
