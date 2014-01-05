@@ -5,7 +5,7 @@
     <Style x:Key="ReplGridStyle"
            TargetType="{x:Type Grid}"
            BasedOn="{x:Null}">
-    </Style>
+    </Style> 
 
     <Style x:Key="ReplButtonsStackPanelStyle"
            TargetType="{x:Type StackPanel}"
