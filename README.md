@@ -12,6 +12,10 @@ Example usages of the control, with styles applied dynamically:
 
 The repo contains 2 test harnesses, one code-behind and the other an MVVM implementation, these are detailed below:
 
+### Code behind implementation
+
+### MVVM implementation
+
 
 This is a work in progress and is part of a couple of blog posts:
 
