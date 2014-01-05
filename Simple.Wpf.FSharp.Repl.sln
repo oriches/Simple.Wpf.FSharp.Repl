@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wpf.Mvvm.TestHarness", "Wpf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simple.Wpf.FSharp.Repl.Themes", "Simple.Wpf.FSharp.Repl.Themes\Simple.Wpf.FSharp.Repl.Themes.csproj", "{90E0DEC6-0787-4468-82D5-E3E23C7E8027}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2CD34B4F-55C9-4B7A-B814-60AAAE19CA37}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
