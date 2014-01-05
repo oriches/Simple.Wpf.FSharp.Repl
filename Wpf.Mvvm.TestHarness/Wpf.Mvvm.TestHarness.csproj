@@ -34,12 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Simple.Wpf.Terminal">
-      <HintPath>..\packages\Simple.Wpf.Terminal.1.11.0.0\lib\net40\Simple.Wpf.Terminal.dll</HintPath>
-    </Reference>
-    <Reference Include="Simple.Wpf.Terminal.Themes">
-      <HintPath>..\packages\Simple.Wpf.Terminal.1.11.0.0\lib\net40\Simple.Wpf.Terminal.Themes.dll</HintPath>
-    </Reference>
     <Reference Include="Simple.Wpf.Themes">
       <HintPath>..\packages\Simple.Wpf.Themes.1.4.0.0\lib\net40\Simple.Wpf.Themes.dll</HintPath>
     </Reference>
@@ -90,18 +84,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Themes\BlueTheme.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Themes\DarkTheme.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Themes\WingdingTheme.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -130,6 +112,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Simple.Wpf.FSharp.Repl.Themes\Simple.Wpf.FSharp.Repl.Themes.csproj">
+      <Project>{90e0dec6-0787-4468-82d5-e3e23c7e8027}</Project>
+      <Name>Simple.Wpf.FSharp.Repl.Themes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Simple.Wpf.FSharp.Repl\Simple.Wpf.FSharp.Repl.csproj">
       <Project>{2017D295-777E-4844-93DD-B7D3FBAD7D6D}</Project>
       <Name>Simple.Wpf.FSharp.Repl</Name>
