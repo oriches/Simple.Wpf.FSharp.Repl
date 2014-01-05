@@ -62,7 +62,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Simple.Wpf.FSharp.Repl\Simple.Wpf.FSharp.Repl.csproj">
+    <ProjectReference Include="..\Simple.Wpf.FSharp.Repl\Simple.Wpf.FSharp.Repl.csproj">
       <Project>{2017D295-777E-4844-93DD-B7D3FBAD7D6D}</Project>
       <Name>Simple.Wpf.FSharp.Repl</Name>
     </ProjectReference>

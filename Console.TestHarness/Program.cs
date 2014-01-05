@@ -10,10 +10,7 @@
         {
             using (var engine = new ReplEngine())
             {
-                engine.State.Subscribe(x =>
-                                       {
-                                           Debug.WriteLine("state = " + x.ToString());
-                                       });
+                engine.State.Subscribe(x => Debug.WriteLine("state = " + x.ToString()));
                 engine.Output.Subscribe(Console.Write);
                 engine.Start("let answer = 42.00;;");
 
