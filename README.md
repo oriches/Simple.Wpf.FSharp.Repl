@@ -32,6 +32,26 @@ XAML:
 
 ### MVVM implementation
 
+```
+public sealed class MainViewModel
+{
+    private readonly IReplWindowController _controller;
+
+    public MainViewModel()
+    {
+        _controller = new ReplWindowController("let ollie = 1337;;");
+    }
+
+    public IReplWindowViewModel Content { get { return _controller.ViewModel; } }
+}
+```
+
+XAML:
+```
+<v:ReplWindow x:Name="ReplWindow"
+              Grid.Row="1"
+              DataContext="{Binding Path=Content, Mode=OneWay}" />
+```
 
 This is a work in progress and is part of a couple of blog posts:
 
