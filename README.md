@@ -7,6 +7,7 @@ The control is available as a nuget [package](https://www.nuget.org/packages/Sim
 
 Example usages of the control, with styles applied dynamically:
 
+![alt text](https://raw.github.com/oriches/Simple.Wpf.FSharp.Repl/master/Readme%20Images/examples.png "Example usage using 2 different themes")
 
 
 The repo contains 2 test harnesses, one code-behind and the other an MVVM implementation, these are detailed below:
