@@ -1,0 +1,35 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:terminal="clr-namespace:Simple.Wpf.Terminal;assembly=Simple.Wpf.Terminal">
+
+    <Style x:Key="ReplGridStyle"
+           TargetType="{x:Type Grid}"
+           BasedOn="{x:Null}">
+    </Style>
+
+    <Style x:Key="ReplButtonsStackPanelStyle"
+           TargetType="{x:Type StackPanel}"
+           BasedOn="{x:Null}">
+    </Style>
+
+    <Style x:Key="ReplButtonStyle"
+           TargetType="{x:Type Button}"
+           BasedOn="{x:Null}">
+    </Style>
+
+    <Style x:Key="ReplTextBlockStyle"
+           TargetType="{x:Type TextBlock}"
+           BasedOn="{x:Null}">
+    </Style>
+
+    <Style x:Key="ReplBorderStyle"
+           TargetType="{x:Type Border}"
+           BasedOn="{x:Null}">
+    </Style>
+
+    <Style x:Key="TerminalStyle"
+           TargetType="{x:Type terminal:Terminal}"
+           BasedOn="{x:Null}">
+    </Style>
+
+</ResourceDictionary>

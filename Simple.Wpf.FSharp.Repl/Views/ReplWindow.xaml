@@ -13,6 +13,12 @@
     
     <UserControl.Resources>
         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Simple.Wpf.FSharp.Repl.Themes;component/DefaultTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+        
     </UserControl.Resources>
     
     <Grid Margin="5"
