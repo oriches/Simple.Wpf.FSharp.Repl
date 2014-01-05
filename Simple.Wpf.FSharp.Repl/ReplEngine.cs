@@ -12,10 +12,21 @@
     using System.Threading;
     using Extensions;
 
+    /// <summary>
+    /// Wrapper around the F# Interactive process.
+    /// </summary>
     public sealed class ReplEngine : IReplEngine, IDisposable
     {
+        /// <summary>
+        /// REPL engine quit line for the F# Interactive process.
+        /// </summary>
         public const string QuitLine = "#quit;;";
+
+        /// <summary>
+        /// REPL engine line termination characters.
+        /// </summary>
         public const string LineTermination = ";;";
+
         private const string BinaryDirectory = @"FSharp";
         private const string Executable32Bit = @"fsi.exe";
         private const string ExecutableAnyCpu = @"fsiAnyCpu.exe";
@@ -88,6 +99,12 @@
             }
         }
 
+        /// <summary>
+        /// Creates an instance of the REPL engine with the specified parameters.
+        /// </summary>
+        /// <param name="workingDirectory">The working directory for the F# Interactive process.</param>
+        /// <param name="scheduler">The Reactive scheduler for the REPL engine, defaults to the task pool scheduler.</param>
+        /// <param name="anyCpu">Flag indicating whether to run as 32bit (false) or to determine at runtime (true).</param>
         public ReplEngine(string workingDirectory = null, IScheduler scheduler = null, bool anyCpu = true)
         {
             _scheduler = scheduler;
@@ -109,12 +126,26 @@
             };
         }
 
+        /// <summary>
+        /// REPL engine output as a Reactive extensions stream.
+        /// </summary>
         public IObservable<string> Output { get { return _outputStream.Where(x => !x.IsError).Select(x => x.Output); } }
 
+        /// <summary>
+        /// REPL engine errors as a Reactive extensions stream.
+        /// </summary>
         public IObservable<string> Error { get { return _outputStream.Where(x => x.IsError).Select(x => x.Output); } }
 
+        /// <summary>
+        /// REPL engine state changes as a Reactive extensions stream.
+        /// </summary>
         public IObservable<State> State { get { return _stateStream.DistinctUntilChanged(); } }
 
+        /// <summary>
+        /// Starts the REPL engine.
+        /// </summary>
+        /// <param name="script">The script to run at startup.</param>
+        /// <returns>Returns the REPL engine.</returns>
         public IReplEngine Start(string script = null)
         {
             var state = _stateStream.First();
@@ -131,6 +162,10 @@
             return this;
         }
 
+        /// <summary>
+        /// Stops the REPL engine.
+        /// </summary>
+        /// <returns>Returns the REPL engine.</returns>
         public IReplEngine Stop()
         {
             var state = _stateStream.First();
@@ -151,6 +186,10 @@
             return this;
         }
 
+        /// <summary>
+        /// Reset the REPL engine if it has already been started.
+        /// </summary>
+        /// <returns>Returns the REPL engine.</returns>
         public IReplEngine Reset()
         {
             var state = _stateStream.First();
@@ -171,6 +210,11 @@
             return this;
         }
 
+        /// <summary>
+        /// Executes the scrpts, if the REPL engine has been started.
+        /// </summary>
+        /// <param name="script">The script to be executed</param>
+        /// <returns>Returns the REPL engine.</returns>
         public IReplEngine Execute(string script)
         {
             var state = _stateStream.First();
@@ -189,6 +233,9 @@
             return this;
         }
 
+        /// <summary>
+        /// Disposes the REPL engine, if it's been started then it will be stopped.
+        /// </summary>
         public void Dispose()
         {
             Stop();

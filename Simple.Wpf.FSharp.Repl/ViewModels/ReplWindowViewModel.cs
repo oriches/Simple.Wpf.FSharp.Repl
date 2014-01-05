@@ -12,6 +12,9 @@
     using System.Windows.Input;
     using Commands;
 
+    /// <summary>
+    /// ViewModel for the REPL engine UI
+    /// </summary>
     public sealed class ReplWindowViewModel : BaseViewModel, IReplWindowViewModel, IDisposable
     {
         private readonly CompositeDisposable _disposable;
@@ -21,6 +24,12 @@
         
         private State _state;
 
+        /// <summary>
+        /// Creates an instance of the REPL engine ViewModel.
+        /// </summary>
+        /// <param name="replState">Reactive extensions stream of the REPL engine state.</param>
+        /// <param name="replOutput">Reactive extensions stream of the REPL engine output.</param>
+        /// <param name="replError">Reactive extensions stream of the REPL engine errors.</param>
         public ReplWindowViewModel(IObservable<State> replState, IObservable<ReplLineViewModel> replOutput, IObservable<ReplLineViewModel> replError)
         {
             _state = Repl.State.Unknown;
@@ -59,24 +68,54 @@
             };
         }
 
+        /// <summary>
+        /// The REPL engine prompt.
+        /// </summary>
         public string Prompt { get { return "> "; } }
 
+        /// <summary>
+        /// The REPL engine state.
+        /// </summary>
         public string State { get { return  _state == Repl.State.Executing ? "Executing" : string.Empty; } }
 
+        /// <summary>
+        /// Reset requests as a Reactive extensions stream, this is consumed by the controller.
+        /// </summary>
         public IObservable<Unit> Reset { get { return _reset; } }
 
+        /// <summary>
+        /// Execution requests as a Reactive extensions stream, this is consumed by the controller.
+        /// </summary>
         public IObservable<string> Execute { get { return _execute; } }
 
+        /// <summary>
+        /// The aggregated output from the REPL engine.
+        /// </summary>
         public IEnumerable<ReplLineViewModel> Output { get { return _output; } }
 
+        /// <summary>
+        /// Clear the output command.
+        /// </summary>
         public ICommand ClearCommand { get; private set; }
 
+        /// <summary>
+        /// Reset the REPL engine commnad.
+        /// </summary>
         public ICommand ResetCommand { get; private set; }
 
+        /// <summary>
+        /// Executes the REPL engine commnad.
+        /// </summary>
         public ICommand ExecuteCommand { get; private set; }
 
+        /// <summary>
+        /// Is the REPL engine UI in read only mode.
+        /// </summary>
         public bool IsReadOnly { get { return _state == Repl.State.Executing; } }
 
+        /// <summary>
+        /// Disposes the ViewModel.
+        /// </summary>
         public void Dispose()
         {
             _disposable.Dispose();

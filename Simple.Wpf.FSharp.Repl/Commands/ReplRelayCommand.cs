@@ -15,7 +15,7 @@
         }
     }
 
-    internal class ReplRelayCommand<T> : IReplRelayCommand<T>
+    internal class ReplRelayCommand<T> : ICommand
     {
         private readonly Action<T> _execute;
         private readonly Func<T, bool> _canExecute;
