@@ -2,21 +2,21 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:terminal="clr-namespace:Simple.Wpf.Terminal;assembly=Simple.Wpf.Terminal">
 
-    <Style x:Key="TerminalGridStyle"
+    <Style x:Key="ReplGridStyle"
            TargetType="{x:Type Grid}"
            BasedOn="{x:Null}">
         <Setter Property="Background"
                 Value="#FF2D2D30" />
     </Style>
 
-    <Style x:Key="TerminalButtonsStackPanelStyle"
+    <Style x:Key="ReplButtonsStackPanelStyle"
            TargetType="{x:Type StackPanel}"
            BasedOn="{x:Null}">
         <Setter Property="Background"
                 Value="Transparent" />
     </Style>
-    
-    <Style x:Key="TerminalButtonStyle"
+
+    <Style x:Key="ReplButtonStyle"
            TargetType="{x:Type Button}"
            BasedOn="{x:Null}">
         <Setter Property="Background"
@@ -51,7 +51,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="TerminalTextBlockStyle"
+    <Style x:Key="ReplTextBlockStyle"
            TargetType="{x:Type TextBlock}"
            BasedOn="{x:Null}">
         <Setter Property="Foreground"
@@ -60,7 +60,7 @@
                 Value="Italic" />
     </Style>
 
-    <Style x:Key="TerminalBorderStyle"
+    <Style x:Key="ReplBorderStyle"
            TargetType="{x:Type Border}"
            BasedOn="{x:Null}">
         <Setter Property="Background"

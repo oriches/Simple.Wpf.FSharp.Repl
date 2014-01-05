@@ -1,4 +1,4 @@
-﻿namespace Simple.Wpf.FSharp.Repl.Themes
+﻿namespace Simple.Wpf.FSharp.Repl.Themes.Helpers
 {
     using Terminal.Themes;
 

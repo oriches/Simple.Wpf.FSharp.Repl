@@ -18,10 +18,12 @@
         
         <themes:Themes x:Name="ThemeControl"
                        Margin="5"
-                       Grid.Row="0" />
+                       Grid.Row="0"
+                       Focusable="True"
+                       FocusManager.FocusedElement="{Binding ElementName=ThemeControl}" />
 
         <v:ReplWindow x:Name="ReplWindow"
-                      Grid.Row="1"/>
+                      Grid.Row="1" />
         
     </Grid>
 </Window>

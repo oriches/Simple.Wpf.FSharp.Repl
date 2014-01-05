@@ -16,7 +16,7 @@
     </UserControl.Resources>
     
     <Grid Margin="5"
-          Style="{DynamicResource TerminalGridStyle}">
+          Style="{DynamicResource ReplGridStyle}">
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -32,7 +32,7 @@
                     Grid.Row="0"
                     Grid.Column="0"
                     Orientation="Horizontal"
-                    Style="{DynamicResource TerminalButtonsStackPanelStyle}"
+                    Style="{DynamicResource ReplButtonsStackPanelStyle}"
                     VerticalAlignment="Bottom"
                     Margin="5,0">
 
@@ -41,7 +41,7 @@
                     Padding="5,0"
                     Content="Clear"
                     Margin="0,0,5,0"
-                    Style="{DynamicResource TerminalButtonStyle}"
+                    Style="{DynamicResource ReplButtonStyle}"
                     FocusManager.IsFocusScope="false"
                     FocusManager.FocusedElement="{Binding ElementName=TerminalOutput}"
                     Command="{Binding Path=ClearCommand, Mode=OneWay}">
@@ -51,7 +51,7 @@
                     Height="20"
                     Padding="5,0"
                     Content="Reset"
-                    Style="{DynamicResource TerminalButtonStyle}"
+                    Style="{DynamicResource ReplButtonStyle}"
                     FocusManager.IsFocusScope="false"
                     FocusManager.FocusedElement="{Binding ElementName=TerminalOutput}"
                     Command="{Binding Path=ResetCommand, Mode=OneWay}">
@@ -63,7 +63,7 @@
                    Grid.Row="0"
                    Grid.Column="1"
                    Margin="5,0"
-                   Style="{DynamicResource TerminalTextBlockStyle}"
+                   Style="{DynamicResource ReplTextBlockStyle}"
                    HorizontalAlignment="Right"
                    VerticalAlignment="Center"
                    Text="{Binding Path=State, Mode=OneWay}" />
@@ -73,7 +73,7 @@
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
                 Padding="5"
-                Style="{DynamicResource TerminalBorderStyle}">
+                Style="{DynamicResource ReplBorderStyle}">
 
             <terminal:Terminal x:Name="TerminalOutput"
                                IsReadOnlyCaretVisible="False"
