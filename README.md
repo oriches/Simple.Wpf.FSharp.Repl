@@ -14,6 +14,22 @@ The repo contains 2 test harnesses, one code-behind and the other an MVVM implem
 
 ### Code behind implementation
 
+```
+public partial class MainWindow : Window
+{
+    public MainWindow()
+    {
+        InitializeComponent();
+
+        ReplWindow.DataContext = new ReplWindowController("let ollie = 1337;;").ViewModel;
+    }
+}
+```
+XAML:
+```
+<v:ReplWindow x:Name="ReplWindow" />
+```
+
 ### MVVM implementation
 
 
