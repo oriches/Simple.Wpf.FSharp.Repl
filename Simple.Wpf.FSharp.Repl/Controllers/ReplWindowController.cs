@@ -23,7 +23,7 @@
         /// Creates an instance of the controller.
         /// </summary>
         /// <param name="startupScript">The script to run at startup, default is null.</param>
-        /// <param name="replEngine">The REPL engine, default null.</param>
+        /// <param name="replEngine">The REPL engine.</param>
         /// <param name="dispatcherScheduler">The Reactive extensions shceduler for the UI thread (dispatcher).</param>
         /// <param name="taskScheduler">The Reactive extensiosn scheduler for the task pool scheduler.</param>
         public ReplWindowController(string startupScript = null,
