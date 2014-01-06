@@ -47,7 +47,7 @@
                        Grid.Row="2"
                        Grid.Column="0"
                        Grid.ColumnSpan="2"
-                       WorkingDirectory="c:\temp\fsharp"
+                       BaseDirectory="c:\temp\fsharp"
                        StartUpScript="let ollie = 42;;"/>
 
     </Grid>

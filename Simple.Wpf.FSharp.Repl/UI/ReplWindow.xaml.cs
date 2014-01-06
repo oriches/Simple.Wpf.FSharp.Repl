@@ -1,6 +1,7 @@
 ﻿namespace Simple.Wpf.FSharp.Repl.UI
 {
     using System;
+    using System.Reactive.Disposables;
     using System.Windows;
     using System.Windows.Controls;
     using Controllers;
@@ -10,8 +11,6 @@
     /// </summary>
     public partial class ReplWindow : UserControl
     {
-        private ReplEngineController _controller;
-
         /// <summary>
         /// Optional startup script dependency property, used when the REPL engine starts.
         /// </summary>
@@ -21,12 +20,23 @@
             new PropertyMetadata(default(string)));
 
         /// <summary>
-        /// Optional working directory dependency property, used when the REPL engine starts.
+        /// The current working directory dependency property, used when the REPL engine starts.
         /// </summary>
         public static readonly DependencyProperty WorkingDirectoryProperty = DependencyProperty.Register("WorkingDirectory",
             typeof(string),
             typeof(ReplWindow),
             new PropertyMetadata(default(string)));
+
+        /// <summary>
+        /// Optional base directory dependency property, used when the REPL engine starts.
+        /// </summary>
+        public static readonly DependencyProperty BaseDirectoryProperty = DependencyProperty.Register("BaseDirectory",
+            typeof(string),
+            typeof(ReplWindow),
+            new PropertyMetadata(default(string)));
+
+        private ReplEngineController _controller;
+        private IDisposable _disposable;
 
         /// <summary>
         /// Creates an instance of the Repl window user control.
@@ -61,19 +71,35 @@
         }
 
         /// <summary>
-        /// The working directory property.
+        /// The current working directory property.
         /// </summary>
         public string WorkingDirectory
         {
             get { return (string) GetValue(WorkingDirectoryProperty); }
-            set { SetValue(WorkingDirectoryProperty, value); }
+            private set { SetValue(WorkingDirectoryProperty, value); }
+        }
+
+        /// <summary>
+        /// The base directory property.
+        /// </summary>
+        public string BaseDirectory
+        {
+            get { return (string)GetValue(BaseDirectoryProperty); }
+            set { SetValue(BaseDirectoryProperty, value); }
         }
 
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
             if (_controller == null)
             {
-                _controller = new ReplEngineController(StartUpScript, WorkingDirectory);
+                _controller = new ReplEngineController(StartUpScript, BaseDirectory);
+                var disposable = _controller.WorkingDirectory.Subscribe(x => WorkingDirectory = x);
+                
+                _disposable = Disposable.Create(() =>
+                {
+                    _controller.Dispose();
+                    disposable.Dispose();
+                });
             }
 
             ReplEngine.DataContext = _controller.ViewModel;
@@ -83,7 +109,7 @@
         {
             if (_controller != null)
             {
-                _controller.Dispose();
+                _disposable.Dispose();
             }
         }
     }

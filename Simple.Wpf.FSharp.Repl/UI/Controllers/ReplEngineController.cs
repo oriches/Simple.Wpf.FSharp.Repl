@@ -5,7 +5,7 @@
     using System.Reactive.Disposables;
     using System.Reactive.Linq;
     using Core;
-    using UI.ViewModels;
+    using ViewModels;
 
     /// <summary>
     /// Controller for the REPL engine UI, exposes the ViewModel.
@@ -24,9 +24,9 @@
         /// Creates an instance of the controller.
         /// </summary>
         /// <param name="startupScript">The script to run at startup, default is null.</param>
-        /// <param name="workingDirectory">The working directory, default is null.</param>
-        public ReplEngineController(string startupScript, string workingDirectory)
-            : this(startupScript, workingDirectory, null, null, null)
+        /// <param name="baseDirectory">The base directory, default is null.</param>
+        public ReplEngineController(string startupScript, string baseDirectory)
+            : this(startupScript, baseDirectory, null, null, null)
         {
         }
 
@@ -43,12 +43,12 @@
         /// Creates an instance of the controller.
         /// </summary>
         /// <param name="startupScript">The script to run at startup, default is null.</param>
-        /// <param name="workingDirectory">The working directory, default is null.</param>
+        /// <param name="baseDirectory">The base directory, default is null.</param>
         /// <param name="replEngine">The REPL engine.</param>
         /// <param name="dispatcherScheduler">The Reactive extensions shceduler for the UI thread (dispatcher).</param>
         /// <param name="taskScheduler">The Reactive extensiosn scheduler for the task pool scheduler.</param>
         public ReplEngineController(string startupScript = null,
-            string workingDirectory = null,
+            string baseDirectory = null,
             IReplEngine replEngine = null,
             IScheduler dispatcherScheduler = null,
             IScheduler taskScheduler = null)
@@ -56,7 +56,7 @@
             _startupScript = startupScript;
             _disposable = new CompositeDisposable();
 
-            _replEngine = replEngine ?? CreateEngine(workingDirectory);
+            _replEngine = replEngine ?? CreateEngine(baseDirectory);
             _dispatcherScheduler = dispatcherScheduler ?? DispatcherScheduler.Current;
             _taskPoolScheduler = taskScheduler ?? TaskPoolScheduler.Default;
         }
@@ -75,6 +75,14 @@
         public IReplEngineViewModel ViewModel
         {
             get { return _viewModel ?? (_viewModel = CreateViewModelAndStartEngine()); }
+        }
+
+        /// <summary>
+        /// The working directory for the REPL engine.
+        /// </summary>
+        public IObservable<string> WorkingDirectory
+        {
+            get { return _replEngine.WorkingDirectory.ObserveOn(_dispatcherScheduler); }
         }
 
         /// <summary>
