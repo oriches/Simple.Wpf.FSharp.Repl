@@ -1,4 +1,4 @@
-﻿namespace Simple.Wpf.FSharp.Repl.ViewModels
+﻿namespace Simple.Wpf.FSharp.Repl.UI.ViewModels
 {
     using System;
     using System.Collections.Generic;
@@ -11,11 +11,12 @@
     using System.Reactive.Subjects;
     using System.Windows.Input;
     using Commands;
+    using Core;
 
     /// <summary>
-    /// ViewModel for the REPL engine UI
+    /// ViewModel for the REPL engine
     /// </summary>
-    public sealed class ReplWindowViewModel : BaseViewModel, IReplWindowViewModel, IDisposable
+    public sealed class ReplEngineViewModel : BaseViewModel, IReplEngineViewModel, IDisposable
     {
         private readonly CompositeDisposable _disposable;
         private readonly ObservableCollection<ReplLineViewModel> _output;
@@ -30,9 +31,9 @@
         /// <param name="replState">Reactive extensions stream of the REPL engine state.</param>
         /// <param name="replOutput">Reactive extensions stream of the REPL engine output.</param>
         /// <param name="replError">Reactive extensions stream of the REPL engine errors.</param>
-        public ReplWindowViewModel(IObservable<State> replState, IObservable<ReplLineViewModel> replOutput, IObservable<ReplLineViewModel> replError)
+        public ReplEngineViewModel(IObservable<State> replState, IObservable<ReplLineViewModel> replOutput, IObservable<ReplLineViewModel> replError)
         {
-            _state = Repl.State.Unknown;
+            _state = Core.State.Unknown;
             _output = new ObservableCollection<ReplLineViewModel>();
 
             _reset = new Subject<Unit>();
@@ -76,7 +77,7 @@
         /// <summary>
         /// The REPL engine state.
         /// </summary>
-        public string State { get { return  _state == Repl.State.Executing ? "Executing" : string.Empty; } }
+        public string State { get { return  _state == Core.State.Executing ? "Executing" : string.Empty; } }
 
         /// <summary>
         /// Reset requests as a Reactive extensions stream, this is consumed by the controller.
@@ -111,7 +112,7 @@
         /// <summary>
         /// Is the REPL engine UI in read only mode.
         /// </summary>
-        public bool IsReadOnly { get { return _state == Repl.State.Executing; } }
+        public bool IsReadOnly { get { return _state == Core.State.Executing; } }
 
         /// <summary>
         /// Disposes the ViewModel.
@@ -133,7 +134,7 @@
 
         private bool CanReset()
         {
-            return _state == Repl.State.Running || _state == Repl.State.Executing;
+            return _state == Core.State.Running || _state == Core.State.Executing;
         }
 
         private void ResetImpl()
@@ -144,7 +145,7 @@
 
         private bool CanExecute(string arg)
         {
-            return _state == Repl.State.Running || _state == Repl.State.Executing;
+            return _state == Core.State.Running || _state == Core.State.Executing;
         }
 
         private void ExecuteImpl(string line)

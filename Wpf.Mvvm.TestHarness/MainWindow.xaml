@@ -3,9 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:v="clr-namespace:Simple.Wpf.FSharp.Repl.Views;assembly=Simple.Wpf.FSharp.Repl"
         xmlns:themes="clr-namespace:Simple.Wpf.Themes;assembly=Simple.Wpf.Themes"
         xmlns:testHarness="clr-namespace:Wpf.Mvvm.TestHarness"
+        xmlns:views="clr-namespace:Simple.Wpf.FSharp.Repl.UI.Views;assembly=Simple.Wpf.FSharp.Repl"
+        xmlns:ui="clr-namespace:Simple.Wpf.FSharp.Repl.UI;assembly=Simple.Wpf.FSharp.Repl"
         Title="MainWindow"
         mc:Ignorable="d"
         Height="350"
@@ -24,7 +25,7 @@
                        Focusable="True"
                        FocusManager.FocusedElement="{Binding ElementName=ThemeControl}" />
 
-        <v:ReplWindow x:Name="ReplWindow"
+        <ui:ReplEngine x:Name="ReplWindow"
                       Grid.Row="1"
                       DataContext="{Binding Path=Content, Mode=OneWay}" />
         

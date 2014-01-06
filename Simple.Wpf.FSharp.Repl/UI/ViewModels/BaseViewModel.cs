@@ -1,4 +1,4 @@
-﻿namespace Simple.Wpf.FSharp.Repl.ViewModels
+﻿namespace Simple.Wpf.FSharp.Repl.UI.ViewModels
 {
     using System.ComponentModel;
 

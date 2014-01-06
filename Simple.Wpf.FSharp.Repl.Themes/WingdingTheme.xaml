@@ -67,7 +67,7 @@
                 Value="#FF2D2D30" />
     </Style>
 
-    <Style x:Key="TerminalStyle"
+    <Style x:Key="ReplTerminalStyle"
            TargetType="{x:Type terminal:Terminal}"
            BasedOn="{x:Null}">
         <Setter Property="BorderThickness"

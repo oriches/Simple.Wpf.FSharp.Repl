@@ -3,6 +3,7 @@
     using System;
     using System.Diagnostics;
     using Simple.Wpf.FSharp.Repl;
+    using Simple.Wpf.FSharp.Repl.Core;
 
     class Program
     {

@@ -1,4 +1,4 @@
-﻿namespace Simple.Wpf.FSharp.Repl
+﻿namespace Simple.Wpf.FSharp.Repl.Core
 {
     /// <summary>
     /// REPL engine state.

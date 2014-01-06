@@ -3,7 +3,6 @@
     using System;
     using System.Windows;
     using System.Windows.Input;
-    using Simple.Wpf.FSharp.Repl.Controllers;
     using Simple.Wpf.Themes;
 
     public partial class MainWindow : Window
@@ -11,8 +10,6 @@
         public MainWindow()
         {
             InitializeComponent();
-
-            ReplWindow.DataContext = new ReplWindowController("let ollie = 1337;;").ViewModel;
 
             ThemeControl.Scope = ReplWindow;
             ThemeControl.ItemsSource = new[]

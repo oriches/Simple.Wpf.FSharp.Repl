@@ -27,7 +27,7 @@
            BasedOn="{x:Null}">
     </Style>
 
-    <Style x:Key="TerminalStyle"
+    <Style x:Key="ReplTerminalStyle"
            TargetType="{x:Type terminal:Terminal}"
            BasedOn="{x:Null}">
     </Style>

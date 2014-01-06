@@ -4,12 +4,13 @@
     using System.Reactive.Concurrency;
     using System.Reactive.Disposables;
     using System.Reactive.Linq;
-    using ViewModels;
+    using Core;
+    using UI.ViewModels;
 
     /// <summary>
     /// Controller for the REPL engine UI, exposes the ViewModel.
     /// </summary>
-    public sealed class ReplWindowController : IReplWindowController, IDisposable
+    public sealed class ReplEngineController : IReplEngineController, IDisposable
     {
         private readonly string _startupScript;
         private readonly IReplEngine _replEngine;
@@ -17,7 +18,7 @@
         private readonly IScheduler _taskPoolScheduler;
         private readonly CompositeDisposable _disposable;
 
-        private IReplWindowViewModel _viewModel;
+        private IReplEngineViewModel _viewModel;
 
         /// <summary>
         /// Creates an instance of the controller.
@@ -26,7 +27,7 @@
         /// <param name="replEngine">The REPL engine.</param>
         /// <param name="dispatcherScheduler">The Reactive extensions shceduler for the UI thread (dispatcher).</param>
         /// <param name="taskScheduler">The Reactive extensiosn scheduler for the task pool scheduler.</param>
-        public ReplWindowController(string startupScript = null,
+        public ReplEngineController(string startupScript = null,
             IReplEngine replEngine = null,
             IScheduler dispatcherScheduler = null,
             IScheduler taskScheduler = null)
@@ -50,9 +51,18 @@
         /// <summary>
         /// The ViewModel for the REPL engine.
         /// </summary>
-        public IReplWindowViewModel ViewModel
+        public IReplEngineViewModel ViewModel
         {
             get { return _viewModel ?? (_viewModel = CreateViewModelAndStartEngine()); }
+        }
+
+        /// <summary>
+        /// Execute the script
+        /// </summary>
+        /// <param name="script">The script to execute.</param>
+        public void Execute(string script)
+        {
+            _replEngine.Execute(script);
         }
 
         /// <summary>
@@ -63,7 +73,7 @@
             _disposable.Dispose();
         }
 
-        private IReplWindowViewModel CreateViewModelAndStartEngine()
+        private IReplEngineViewModel CreateViewModelAndStartEngine()
         {
             var errorStream = _replEngine.Error
                         .Select(x => new ReplLineViewModel(x, true))
@@ -76,7 +86,7 @@
             var stateStream = _replEngine.State
                        .ObserveOn(_dispatcherScheduler);
 
-            IReplWindowViewModel viewModel = new ReplWindowViewModel(stateStream, outputStream, errorStream);
+            IReplEngineViewModel viewModel = new ReplEngineViewModel(stateStream, outputStream, errorStream);
 
             _disposable.Add(viewModel.Reset
                .ObserveOn(_taskPoolScheduler)

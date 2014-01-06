@@ -1,4 +1,4 @@
-﻿namespace Simple.Wpf.FSharp.Repl.Extensions
+﻿namespace Simple.Wpf.FSharp.Repl.UI.Extensions
 {
     using System.IO;
     using System.Threading;

@@ -1,25 +1,15 @@
-﻿<UserControl x:Class="Simple.Wpf.FSharp.Repl.Views.ReplWindow"
+﻿<UserControl x:Class="Simple.Wpf.FSharp.Repl.UI.ReplEngine"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:vm="clr-namespace:Simple.Wpf.FSharp.Repl.ViewModels"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:terminal="clr-namespace:Simple.Wpf.Terminal;assembly=Simple.Wpf.Terminal"
+             xmlns:viewModels="clr-namespace:Simple.Wpf.FSharp.Repl.UI.ViewModels"
              mc:Ignorable="d"
              d:DesignHeight="200"
              d:DesignWidth="600"
-             d:DataContext="{d:DesignInstance vm:ReplWindowViewModel}">
-    
-    <UserControl.Resources>
-        
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Simple.Wpf.FSharp.Repl.Themes;component/DefaultTheme.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-        
-    </UserControl.Resources>
+             d:DataContext="{d:DesignInstance viewModels:ReplEngineViewModel}">
     
     <Grid Margin="5"
           Style="{DynamicResource ReplGridStyle}">
@@ -84,7 +74,7 @@
             <terminal:Terminal x:Name="TerminalOutput"
                                IsReadOnlyCaretVisible="False"
                                VerticalScrollBarVisibility="Visible"
-                               Style="{DynamicResource TerminalStyle}"
+                               Style="{DynamicResource ReplTerminalStyle}"
                                IsReadOnly="{Binding Path=IsReadOnly, Mode=OneWay}"
                                Prompt="{Binding Path=Prompt, Mode=OneTime}"
                                ItemsSource="{Binding Path=Output, Mode=OneWay}"

@@ -1,12 +1,12 @@
-﻿namespace Simple.Wpf.FSharp.Repl.ViewModels
+﻿namespace Simple.Wpf.FSharp.Repl.UI.ViewModels
 {
     using System;
     using System.Reactive;
 
     /// <summary>
-    /// ViewModel for the REPL engine UI
+    /// ViewModel for the REPL engine
     /// </summary>
-    public interface IReplWindowViewModel 
+    public interface IReplEngineViewModel 
     {
         /// <summary>
         /// Reset requests as a Reactive extensions stream, this is consumed by the controller.

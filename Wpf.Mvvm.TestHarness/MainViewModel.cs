@@ -1,17 +1,17 @@
 ﻿namespace Wpf.Mvvm.TestHarness
 {
     using Simple.Wpf.FSharp.Repl.Controllers;
-    using Simple.Wpf.FSharp.Repl.ViewModels;
+    using Simple.Wpf.FSharp.Repl.UI.ViewModels;
 
     public sealed class MainViewModel
     {
-        private readonly IReplWindowController _controller;
+        private readonly IReplEngineController _controller;
 
         public MainViewModel()
         {
-            _controller = new ReplWindowController("let ollie = 1337;;");
+            _controller = new ReplEngineController("let ollie = 1337;;");
         }
 
-        public IReplWindowViewModel Content { get { return _controller.ViewModel; } }
+        public IReplEngineViewModel Content { get { return _controller.ViewModel; } }
     }
 }

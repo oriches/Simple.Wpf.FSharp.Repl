@@ -1,7 +1,7 @@
 ﻿namespace Simple.Wpf.FSharp.Repl.Tests
 {
     using NUnit.Framework;
-    using ViewModels;
+    using UI.ViewModels;
 
     [TestFixture]
     public class ReplOuputViewModelTests

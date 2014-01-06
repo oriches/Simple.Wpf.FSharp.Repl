@@ -2,7 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:terminal="clr-namespace:Simple.Wpf.Terminal;assembly=Simple.Wpf.Terminal">
 
-    <Style x:Key="TerminalStyle"
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Simple.Wpf.FSharp.Repl.Themes;component/DefaultTheme.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style x:Key="ReplTerminalStyle"
            TargetType="{x:Type terminal:Terminal}"
            BasedOn="{x:Null}">
         <Setter Property="BorderThickness"
