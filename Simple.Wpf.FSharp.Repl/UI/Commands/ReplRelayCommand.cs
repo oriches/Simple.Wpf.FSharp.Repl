@@ -1,4 +1,4 @@
-﻿namespace Simple.Wpf.FSharp.Repl.Commands
+﻿namespace Simple.Wpf.FSharp.Repl.UI.Commands
 {
     using System;
     using System.Windows.Input;

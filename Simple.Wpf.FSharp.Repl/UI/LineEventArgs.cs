@@ -1,4 +1,4 @@
-﻿namespace Simple.Wpf.FSharp.Repl.UI.Views
+﻿namespace Simple.Wpf.FSharp.Repl.UI
 {
     using System;
 

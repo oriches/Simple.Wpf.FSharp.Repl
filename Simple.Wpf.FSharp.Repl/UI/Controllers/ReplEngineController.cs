@@ -1,4 +1,4 @@
-﻿namespace Simple.Wpf.FSharp.Repl.Controllers
+﻿namespace Simple.Wpf.FSharp.Repl.UI.Controllers
 {
     using System;
     using System.Reactive.Concurrency;

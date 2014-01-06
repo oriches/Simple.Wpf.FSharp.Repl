@@ -5,7 +5,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:themes="clr-namespace:Simple.Wpf.Themes;assembly=Simple.Wpf.Themes"
         xmlns:testHarness="clr-namespace:Wpf.Mvvm.TestHarness"
-        xmlns:views="clr-namespace:Simple.Wpf.FSharp.Repl.UI.Views;assembly=Simple.Wpf.FSharp.Repl"
         xmlns:ui="clr-namespace:Simple.Wpf.FSharp.Repl.UI;assembly=Simple.Wpf.FSharp.Repl"
         Title="MainWindow"
         mc:Ignorable="d"

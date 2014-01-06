@@ -1,6 +1,6 @@
 ﻿namespace Wpf.Mvvm.TestHarness
 {
-    using Simple.Wpf.FSharp.Repl.Controllers;
+    using Simple.Wpf.FSharp.Repl.UI.Controllers;
     using Simple.Wpf.FSharp.Repl.UI.ViewModels;
 
     public sealed class MainViewModel
