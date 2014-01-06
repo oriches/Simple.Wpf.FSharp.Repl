@@ -21,6 +21,11 @@
         /// REPL engine output as a Reactive extensions stream.
         /// </summary>
         IObservable<string> Output { get; }
+
+        /// <summary>
+        /// REPL engine working directory as a Reactive extensions stream.
+        /// </summary>
+        IObservable<string> WorkingDirectory { get; }
         
         /// <summary>
         /// Starts the REPL engine.

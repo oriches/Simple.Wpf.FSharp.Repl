@@ -18,6 +18,7 @@
     /// </summary>
     public sealed class ReplEngineViewModel : BaseViewModel, IReplEngineViewModel, IDisposable
     {
+        private string _workingDirectory;
         private readonly CompositeDisposable _disposable;
         private readonly ObservableCollection<ReplLineViewModel> _output;
         private readonly Subject<Unit> _reset;
@@ -31,7 +32,11 @@
         /// <param name="replState">Reactive extensions stream of the REPL engine state.</param>
         /// <param name="replOutput">Reactive extensions stream of the REPL engine output.</param>
         /// <param name="replError">Reactive extensions stream of the REPL engine errors.</param>
-        public ReplEngineViewModel(IObservable<State> replState, IObservable<ReplLineViewModel> replOutput, IObservable<ReplLineViewModel> replError)
+        /// <param name="workingDirectory">Reactive extensions stream of the REPL engine working directory.</param>
+        public ReplEngineViewModel(IObservable<State> replState,
+            IObservable<ReplLineViewModel> replOutput,
+            IObservable<ReplLineViewModel> replError,
+            IObservable<string> workingDirectory)
         {
             _state = Core.State.Unknown;
             _output = new ObservableCollection<ReplLineViewModel>();
@@ -65,7 +70,8 @@
                     {
                         _output.Add(x);
                         CommandManager.InvalidateRequerySuggested();
-                    })
+                    }),
+                workingDirectory.Subscribe(UpdateWorkkingDirectory)
             };
         }
 
@@ -78,6 +84,11 @@
         /// The REPL engine state.
         /// </summary>
         public string State { get { return  _state == Core.State.Executing ? "Executing" : string.Empty; } }
+
+        /// <summary>
+        /// The REPL engine working directory.
+        /// </summary>
+        public string WorkingDirectory { get { return _workingDirectory; } }
 
         /// <summary>
         /// Reset requests as a Reactive extensions stream, this is consumed by the controller.
@@ -134,7 +145,7 @@
 
         private bool CanReset()
         {
-            return _state == Core.State.Running || _state == Core.State.Executing;
+            return _state == Core.State.Running;
         }
 
         private void ResetImpl()
@@ -168,6 +179,12 @@
             _state = state;
             OnPropertyChanged("IsReadOnly");
             OnPropertyChanged("State");
+        }
+
+        private void UpdateWorkkingDirectory(string workingDirectory)
+        {
+            _workingDirectory = workingDirectory;
+            OnPropertyChanged("WorkingDirectory");
         }
     }
 }

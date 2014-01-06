@@ -12,21 +12,44 @@
         Width="525"
         d:DataContext="{d:DesignInstance testHarness:MainViewModel}">
     <Grid>
-        
+
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
         <themes:Themes x:Name="ThemeControl"
                        Margin="5"
                        Grid.Row="0"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="2"
                        Focusable="True"
                        FocusManager.FocusedElement="{Binding ElementName=ThemeControl}" />
 
-        <ui:ReplEngine x:Name="ReplWindow"
-                      Grid.Row="1"
-                      DataContext="{Binding Path=Content, Mode=OneWay}" />
-        
+        <TextBlock Grid.Row="1"
+                   Grid.Column="0"
+                   Margin="5"
+                   Text="Working folder:" />
+
+        <TextBlock x:Name="WorkingFolderTextBox"
+                 Grid.Row="1"
+                 Grid.Column="1"
+                 Margin="5"
+                 FontStyle="Italic"
+                 HorizontalAlignment="Stretch"
+                 Text="{Binding Path=Content.WorkingDirectory, Mode=OneWay}" />
+
+        <ui:ReplEngine x:Name="ReplEngine"
+                       Grid.Row="2"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="2"
+                       DataContext="{Binding Path=Content, Mode=OneWay}" />
+
     </Grid>
 </Window>

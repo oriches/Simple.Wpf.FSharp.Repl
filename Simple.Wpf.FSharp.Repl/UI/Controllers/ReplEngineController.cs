@@ -24,10 +24,31 @@
         /// Creates an instance of the controller.
         /// </summary>
         /// <param name="startupScript">The script to run at startup, default is null.</param>
+        /// <param name="workingDirectory">The working directory, default is null.</param>
+        public ReplEngineController(string startupScript, string workingDirectory)
+            : this(startupScript, workingDirectory, null, null, null)
+        {
+        }
+
+        /// <summary>
+        /// Creates an instance of the controller.
+        /// </summary>
+        /// <param name="startupScript">The script to run at startup, default is null.</param>
+        public ReplEngineController(string startupScript)
+            : this(startupScript, null, null, null, null)
+        {
+        }
+
+        /// <summary>
+        /// Creates an instance of the controller.
+        /// </summary>
+        /// <param name="startupScript">The script to run at startup, default is null.</param>
+        /// <param name="workingDirectory">The working directory, default is null.</param>
         /// <param name="replEngine">The REPL engine.</param>
         /// <param name="dispatcherScheduler">The Reactive extensions shceduler for the UI thread (dispatcher).</param>
         /// <param name="taskScheduler">The Reactive extensiosn scheduler for the task pool scheduler.</param>
         public ReplEngineController(string startupScript = null,
+            string workingDirectory = null,
             IReplEngine replEngine = null,
             IScheduler dispatcherScheduler = null,
             IScheduler taskScheduler = null)
@@ -35,14 +56,14 @@
             _startupScript = startupScript;
             _disposable = new CompositeDisposable();
 
-            _replEngine = replEngine ?? CreateEngine();
+            _replEngine = replEngine ?? CreateEngine(workingDirectory);
             _dispatcherScheduler = dispatcherScheduler ?? DispatcherScheduler.Current;
             _taskPoolScheduler = taskScheduler ?? TaskPoolScheduler.Default;
         }
 
-        private IReplEngine CreateEngine()
+        private IReplEngine CreateEngine(string workingDirectory)
         {
-            var replEngine = new ReplEngine();
+            var replEngine = new ReplEngine(workingDirectory);
             _disposable.Add(replEngine);
 
             return replEngine;
@@ -86,7 +107,10 @@
             var stateStream = _replEngine.State
                        .ObserveOn(_dispatcherScheduler);
 
-            IReplEngineViewModel viewModel = new ReplEngineViewModel(stateStream, outputStream, errorStream);
+            var workingDirectoryStream = _replEngine.WorkingDirectory
+                .ObserveOn(_dispatcherScheduler);
+
+            IReplEngineViewModel viewModel = new ReplEngineViewModel(stateStream, outputStream, errorStream, workingDirectoryStream);
 
             _disposable.Add(viewModel.Reset
                .ObserveOn(_taskPoolScheduler)

@@ -1,4 +1,4 @@
-﻿namespace Simple.Wpf.FSharp.Repl.Core
+﻿namespace Simple.Wpf.FSharp.Repl
 {
     using System;
     using System.Diagnostics;
@@ -8,10 +8,9 @@
     using System.Reactive.Disposables;
     using System.Reactive.Linq;
     using System.Reactive.Subjects;
+    using System.Reflection;
     using System.Threading;
-    using ICSharpCode.SharpZipLib.Zip;
-    using Properties;
-    using UI.Extensions;
+    using Extensions;
 
     /// <summary>
     /// Wrapper around the F# Interactive process.
@@ -28,13 +27,10 @@
         /// </summary>
         public const string LineTermination = ";;";
 
+        private const string BinaryDirectory = @"FSharp";
         private const string Executable32Bit = @"fsi.exe";
         private const string ExecutableAnyCpu = @"fsiAnyCpu.exe";
         private const string AwaitingInput = "> ";
-
-        private const string BaseDirectory = @".simple.wpf.fsharp.repl";
-        private const string FSharpDirectory = @"fsharp";
-        private const string ZipFilename = @"fsharp.zip";
 
         private readonly string _baseWorkingDirectory;
 
@@ -42,7 +38,6 @@
         private readonly bool _anyCpu;
         private readonly Subject<ReplProcessOutput> _outputStream;
         private readonly BehaviorSubject<State> _stateStream;
-        private readonly ReplaySubject<string> _workingDirectoryStream;
         private readonly CompositeDisposable _disposable;
 
         private string _startupScript;
@@ -122,15 +117,13 @@
                 Directory.CreateDirectory(_baseWorkingDirectory);
             }
 
-            _stateStream = new BehaviorSubject<State>(Core.State.Unknown);
+            _stateStream = new BehaviorSubject<State>(Repl.State.Unknown);
             _outputStream = new Subject<ReplProcessOutput>();
-            _workingDirectoryStream = new ReplaySubject<string>(1);
 
             _disposable = new CompositeDisposable
             {
                 _stateStream,
                 _outputStream,
-                _workingDirectoryStream
             };
         }
 
@@ -150,11 +143,6 @@
         public IObservable<State> State { get { return _stateStream.DistinctUntilChanged(); } }
 
         /// <summary>
-        /// REPL engine working directory as a Reactive extensions stream.
-        /// </summary>
-        public IObservable<string> WorkingDirectory { get { return _workingDirectoryStream.DistinctUntilChanged(); } }
-
-        /// <summary>
         /// Starts the REPL engine.
         /// </summary>
         /// <param name="script">The script to run at startup.</param>
@@ -162,12 +150,12 @@
         public IReplEngine Start(string script = null)
         {
             var state = _stateStream.First();
-            if (state != Core.State.Stopped && state != Core.State.Unknown && state != Core.State.Faulted)
+            if (state != Repl.State.Stopped && state != Repl.State.Unknown && state != Repl.State.Faulted)
             {
                 return this;
             }
 
-            _stateStream.OnNext(Core.State.Starting);
+            _stateStream.OnNext(Repl.State.Starting);
 
             _startupScript = script;
             _replProcess = StartProcess();
@@ -182,19 +170,19 @@
         public IReplEngine Stop()
         {
             var state = _stateStream.First();
-            if (state == Core.State.Stopping || state == Core.State.Stopped)
+            if (state == Repl.State.Stopping || state == Repl.State.Stopped)
             {
                 return this;
             }
 
-            _stateStream.OnNext(Core.State.Stopping);
+            _stateStream.OnNext(Repl.State.Stopping);
 
             _replProcess.Dispose();
 
             _replProcess = null;
             _startupScript = null;
 
-            _stateStream.OnNext(Core.State.Stopped);
+            _stateStream.OnNext(Repl.State.Stopped);
             
             return this;
         }
@@ -206,17 +194,17 @@
         public IReplEngine Reset()
         {
             var state = _stateStream.First();
-            if (state == Core.State.Stopping || state == Core.State.Stopped)
+            if (state == Repl.State.Stopping || state == Repl.State.Stopped)
             {
                 return this;
             }
 
-            _stateStream.OnNext(Core.State.Stopping);
+            _stateStream.OnNext(Repl.State.Stopping);
 
             _replProcess.Dispose();
 
-            _stateStream.OnNext(Core.State.Stopped);
-            _stateStream.OnNext(Core.State.Starting);
+            _stateStream.OnNext(Repl.State.Stopped);
+            _stateStream.OnNext(Repl.State.Starting);
 
             _replProcess = StartProcess();
 
@@ -231,14 +219,14 @@
         public IReplEngine Execute(string script)
         {
             var state = _stateStream.First();
-            if (state != Core.State.Running && state != Core.State.Executing)
+            if (state != Repl.State.Running && state != Repl.State.Executing)
             {
                 return this;
             }
 
             if (script.EndsWith(LineTermination))
             {
-                _stateStream.OnNext(Core.State.Executing);
+                _stateStream.OnNext(Repl.State.Executing);
             }
 
             _replProcess.WriteLine(script);
@@ -270,7 +258,7 @@
             })
             .Select(_ => ObserveStandardErrors(process, tokenSource.Token))
             .Select(_ => ObserveStandardOutput(process, tokenSource.Token))
-            .Subscribe(_ => { }, e => _stateStream.OnNext(Core.State.Faulted));
+            .Subscribe(_ => { }, e => _stateStream.OnNext(Repl.State.Faulted));
 
             return new ReplProcess(process, Disposable.Create(() =>
             {
@@ -299,17 +287,17 @@
                         {
                             _outputStream.OnNext(new ReplProcessOutput(output));
 
-                            if (_stateStream.First() == Core.State.Starting && !string.IsNullOrEmpty(_startupScript))
+                            if (_stateStream.First() == Repl.State.Starting && !string.IsNullOrEmpty(_startupScript))
                             {
                                 _outputStream.OnNext(new ReplProcessOutput(_startupScript));
                                 _outputStream.OnNext(new ReplProcessOutput(Environment.NewLine));
 
-                                _stateStream.OnNext(Core.State.Executing);
+                                _stateStream.OnNext(Repl.State.Executing);
                                 _replProcess.WriteLine(_startupScript);
                             }
                             else
                             {
-                                _stateStream.OnNext(Core.State.Running);
+                                _stateStream.OnNext(Repl.State.Running);
                             }
 
                             break;
@@ -349,75 +337,38 @@
             }, _scheduler);
         }
 
-        private void ExtractFSharpBinaries()
+        private string BuildExecutablePath()
         {
-            var tempDirectory = Path.GetTempPath();
-            var baseDirectory = Path.Combine(tempDirectory, BaseDirectory);
-            var binaryDirectory = Path.Combine(baseDirectory, FSharpDirectory);
-
-            if (Directory.Exists(binaryDirectory))
+            var currrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (currrentDirectory == null)
             {
-                return;
+                throw new Exception("Failed to get currrent executing directory.");
             }
-
-            var di = new DirectoryInfo(baseDirectory);
-            if (!di.Exists)
-            {
-                di.Create();
-            }
-
-            di = new DirectoryInfo(binaryDirectory);
-            if (!di.Exists)
-            {
-                di.Create();
-            }
-
-            var zipFilePath = Path.Combine(binaryDirectory, ZipFilename);
-            using (var stream = File.Create(zipFilePath))
-            {
-                stream.Write(Resources.FSharp, 0, Resources.FSharp.Length);
-            }
-
-            var zipper = new FastZip();
-            zipper.ExtractZip(zipFilePath, binaryDirectory, FastZip.Overwrite.Always, null, null, null, true);
-
-            File.Delete(zipFilePath);
-        }
-
-        private string CreateExecutablePath()
-        {
-            ExtractFSharpBinaries();
-
-            var tempDirectory = Path.GetTempPath();
-            var baseDirectory = Path.Combine(tempDirectory, BaseDirectory);
-            var binaryDirectory = Path.Combine(baseDirectory, FSharpDirectory);
 
             var execute = _anyCpu ? ExecutableAnyCpu : Executable32Bit;
-            return Path.Combine(binaryDirectory, execute);
+            return Path.Combine(Path.Combine(currrentDirectory, BinaryDirectory), execute);
         }
 
-        private string CreateWorkingDirectory()
+        private string BuildWorkingDirectory()
         {
             string workingDirectory;
             if (string.IsNullOrEmpty(_baseWorkingDirectory))
             {
-                var tempDirectory = Path.GetTempPath();
-                var baseDirectory = Path.Combine(tempDirectory, BaseDirectory);
+                var currrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                if (currrentDirectory == null)
+                {
+                    throw new Exception("Failed to get currrent executing directory.");
+                }
 
-                workingDirectory = Path.Combine(baseDirectory, Guid.NewGuid().ToString());
+                workingDirectory = Path.Combine(currrentDirectory, Guid.NewGuid().ToString());
             }
             else
             {
                 workingDirectory = Path.Combine(_baseWorkingDirectory, Guid.NewGuid().ToString());
             }
 
-            var di = new DirectoryInfo(workingDirectory);
-            if (!di.Exists)
-            {
-                di.Create();
-            }
+            Directory.CreateDirectory(workingDirectory);
 
-            _workingDirectoryStream.OnNext(workingDirectory);
             return workingDirectory;
         }
 
@@ -432,8 +383,8 @@
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardInput = true,
-                    WorkingDirectory = CreateWorkingDirectory(),
-                    FileName = CreateExecutablePath()
+                    WorkingDirectory = BuildWorkingDirectory(),
+                    FileName = BuildExecutablePath()
                 }
             };
 

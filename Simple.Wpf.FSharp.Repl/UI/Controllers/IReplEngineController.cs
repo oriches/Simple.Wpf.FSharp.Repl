@@ -1,11 +1,12 @@
 ﻿namespace Simple.Wpf.FSharp.Repl.UI.Controllers
 {
+    using System;
     using UI.ViewModels;
 
     /// <summary>
     /// Controller for the REPL engine, exposes the ViewModel.
     /// </summary>
-    public interface IReplEngineController
+    public interface IReplEngineController : IDisposable
     {
         /// <summary>
         /// The ViewModel for the REPL engine.

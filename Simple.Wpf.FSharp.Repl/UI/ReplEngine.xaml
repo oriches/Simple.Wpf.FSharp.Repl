@@ -4,13 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:terminal="clr-namespace:Simple.Wpf.Terminal;assembly=Simple.Wpf.Terminal"
-             xmlns:viewModels="clr-namespace:Simple.Wpf.FSharp.Repl.UI.ViewModels"
+             xmlns:t="clr-namespace:Simple.Wpf.Terminal;assembly=Simple.Wpf.Terminal"
+             xmlns:vm="clr-namespace:Simple.Wpf.FSharp.Repl.UI.ViewModels"
              mc:Ignorable="d"
              d:DesignHeight="200"
              d:DesignWidth="600"
-             d:DataContext="{d:DesignInstance viewModels:ReplEngineViewModel}">
-    
+             d:DataContext="{d:DesignInstance vm:ReplEngineViewModel}">
+
     <Grid Margin="5"
           Style="{DynamicResource ReplGridStyle}">
 
@@ -42,7 +42,7 @@
                     FocusManager.FocusedElement="{Binding ElementName=TerminalOutput}"
                     Command="{Binding Path=ClearCommand, Mode=OneWay}">
             </Button>
-            
+
             <Button x:Name="ResetButton"
                     Height="20"
                     Padding="5,0"
@@ -71,7 +71,7 @@
                 Padding="5"
                 Style="{DynamicResource ReplBorderStyle}">
 
-            <terminal:Terminal x:Name="TerminalOutput"
+            <t:Terminal x:Name="TerminalOutput"
                                IsReadOnlyCaretVisible="False"
                                VerticalScrollBarVisibility="Visible"
                                Style="{DynamicResource ReplTerminalStyle}"
@@ -81,16 +81,16 @@
                                ItemDisplayPath="Value"
                                ItemIsErrorPath="IsError">
 
-                <terminal:Terminal.InputBindings>
+                <t:Terminal.InputBindings>
                     <KeyBinding Command="{Binding Path=ClearCommand, Mode=OneWay}"
                                 Gesture="CTRL+E" />
                     <KeyBinding Command="{Binding Path=ResetCommand, Mode=OneWay}"
                                 Gesture="CTRL+R" />
                     <KeyBinding Command="{x:Null}"
                                 Gesture="CTRL+L" />
-                </terminal:Terminal.InputBindings>
+                </t:Terminal.InputBindings>
 
-                <terminal:Terminal.ContextMenu>
+                <t:Terminal.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Clear"
                                   InputGestureText="Ctrl+E"
@@ -101,21 +101,21 @@
                         <Separator />
                         <MenuItem Header="Copy"
                                   InputGestureText="Ctrl+C"
-                                  Command="ApplicationCommands.Copy"/>
+                                  Command="ApplicationCommands.Copy" />
                         <MenuItem Header="Paste"
                                   InputGestureText="Ctrl+V"
                                   Command="ApplicationCommands.Paste" />
                     </ContextMenu>
-                </terminal:Terminal.ContextMenu>
-                
+                </t:Terminal.ContextMenu>
+
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="LineEntered">
                         <i:InvokeCommandAction Command="{Binding Path=ExecuteCommand, Mode=OneWay}"
                                                CommandParameter="{Binding Path=Line, Mode=OneWay, ElementName=TerminalOutput}" />
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
-                
-            </terminal:Terminal>
+
+            </t:Terminal>
 
         </Border>
     </Grid>

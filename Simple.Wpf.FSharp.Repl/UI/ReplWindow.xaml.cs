@@ -21,6 +21,14 @@
             new PropertyMetadata(default(string)));
 
         /// <summary>
+        /// Optional working directory dependency property, used when the REPL engine starts.
+        /// </summary>
+        public static readonly DependencyProperty WorkingDirectoryProperty = DependencyProperty.Register("WorkingDirectory",
+            typeof(string),
+            typeof(ReplWindow),
+            new PropertyMetadata(default(string)));
+
+        /// <summary>
         /// Creates an instance of the Repl window user control.
         /// </summary>
         public ReplWindow()
@@ -37,7 +45,10 @@
         /// <param name="script"></param>
         public void ExecuteScript(string script)
         {
-            _controller.Execute(script);
+            if (_controller != null)
+            {
+                _controller.Execute(script);
+            }
         }
 
         /// <summary>
@@ -49,11 +60,20 @@
             set { SetValue(StartUpScriptProperty, value); }
         }
 
+        /// <summary>
+        /// The working directory property.
+        /// </summary>
+        public string WorkingDirectory
+        {
+            get { return (string) GetValue(WorkingDirectoryProperty); }
+            set { SetValue(WorkingDirectoryProperty, value); }
+        }
+
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
             if (_controller == null)
             {
-                _controller = new ReplEngineController(StartUpScript);
+                _controller = new ReplEngineController(StartUpScript, WorkingDirectory);
             }
 
             ReplEngine.DataContext = _controller.ViewModel;
