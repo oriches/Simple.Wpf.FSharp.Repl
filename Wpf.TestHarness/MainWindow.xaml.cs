@@ -11,6 +11,9 @@
         {
             InitializeComponent();
 
+            ReplWindow.BaseDirectory = @"c:\temp\fsharp";
+            ReplWindow.StartUpScript = @"let ollie = 42;;";
+
             ThemeControl.Scope = ReplWindow;
             ThemeControl.ItemsSource = new[]
             {

@@ -46,9 +46,7 @@
         <ui:ReplWindow x:Name="ReplWindow"
                        Grid.Row="2"
                        Grid.Column="0"
-                       Grid.ColumnSpan="2"
-                       BaseDirectory="c:\temp\fsharp"
-                       StartUpScript="let ollie = 42;;"/>
+                       Grid.ColumnSpan="2" />
 
     </Grid>
 </Window>

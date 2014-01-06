@@ -107,18 +107,18 @@
         /// <summary>
         /// Creates an instance of the REPL engine with the specified parameters.
         /// </summary>
-        /// <param name="workingDirectory">The working directory for the F# Interactive process.</param>
+        /// <param name="baseWorkingDirectory">The base working directory for the F# Interactive process.</param>
         /// <param name="scheduler">The Reactive scheduler for the REPL engine, defaults to the task pool scheduler.</param>
         /// <param name="anyCpu">Flag indicating whether to run as 32bit (false) or to determine at runtime (true).</param>
-        public ReplEngine(string workingDirectory = null, IScheduler scheduler = null, bool anyCpu = true)
+        public ReplEngine(string baseWorkingDirectory = null, IScheduler scheduler = null, bool anyCpu = true)
         {
             _scheduler = scheduler;
             _anyCpu = anyCpu;
             _scheduler = scheduler ?? TaskPoolScheduler.Default;
 
-            if (!string.IsNullOrWhiteSpace(workingDirectory))
+            if (!string.IsNullOrWhiteSpace(baseWorkingDirectory))
             {
-                _baseWorkingDirectory = workingDirectory.Trim();
+                _baseWorkingDirectory = baseWorkingDirectory.Trim();
                 Directory.CreateDirectory(_baseWorkingDirectory);
             }
 
