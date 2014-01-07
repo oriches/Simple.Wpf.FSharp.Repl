@@ -35,6 +35,8 @@
         {
             InitializeComponent();
 
+            ReplEngine.DataContext = null;
+
             Loaded += OnLoaded;
             Dispatcher.ShutdownStarted += DispatcherOnShutdownStarted;
         }
