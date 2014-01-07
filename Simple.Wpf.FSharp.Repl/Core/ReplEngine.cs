@@ -63,9 +63,9 @@
             {
                 _process.WriteStandardInput(QuitLine);
                 _process.WaitForExit();
-                _process.Dispose();
-
+                
                 _disposable.Dispose();
+                _process.Dispose();
             }
 
             public void WriteLine(string script)
@@ -275,38 +275,45 @@
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     var output = string.Empty;
-                    while (!cancellationToken.IsCancellationRequested)
+
+                    try
                     {
-                        var readTask = process.StandardOutputReadAsync(cancellationToken);
-                        readTask.Wait(cancellationToken);
-
-                        output += (char)readTask.Result;
-
-                        if (output == AwaitingInput)
+                        while (!cancellationToken.IsCancellationRequested)
                         {
-                            _outputStream.OnNext(new ReplProcessOutput(output));
+                            var readTask = process.StandardOutputReadAsync(cancellationToken);
+                            readTask.Wait(cancellationToken);
 
-                            if (_stateStream.First() == Core.State.Starting && !string.IsNullOrEmpty(_startupScript))
+                            output += (char) readTask.Result;
+
+                            if (output == AwaitingInput)
                             {
-                                _outputStream.OnNext(new ReplProcessOutput(_startupScript));
-                                _outputStream.OnNext(new ReplProcessOutput(Environment.NewLine));
+                                _outputStream.OnNext(new ReplProcessOutput(output));
 
-                                _stateStream.OnNext(Core.State.Executing);
-                                _replProcess.WriteLine(_startupScript);
+                                if (_stateStream.First() == Core.State.Starting && !string.IsNullOrEmpty(_startupScript))
+                                {
+                                    _outputStream.OnNext(new ReplProcessOutput(_startupScript));
+                                    _outputStream.OnNext(new ReplProcessOutput(Environment.NewLine));
+
+                                    _stateStream.OnNext(Core.State.Executing);
+                                    _replProcess.WriteLine(_startupScript);
+                                }
+                                else
+                                {
+                                    _stateStream.OnNext(Core.State.Running);
+                                }
+
+                                break;
                             }
-                            else
+
+                            if (output.EndsWith(Environment.NewLine))
                             {
-                                _stateStream.OnNext(Core.State.Running);
+                                _outputStream.OnNext(new ReplProcessOutput(output));
+                                break;
                             }
-
-                            break;
                         }
-
-                        if (output.EndsWith(Environment.NewLine))
-                        {
-                            _outputStream.OnNext(new ReplProcessOutput(output));
-                            break;
-                        }
+                    }
+                    catch (OperationCanceledException)
+                    {
                     }
                 }
             }, _scheduler);
@@ -319,24 +326,31 @@
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     var error = string.Empty;
-                    while (!cancellationToken.IsCancellationRequested)
+
+                    try
                     {
-                        var readTask = process.StandardErrorReadAsync(cancellationToken);
-                        readTask.Wait(cancellationToken);
-
-                        error += (char)readTask.Result;
-
-                        if (error.EndsWith(Environment.NewLine))
+                        while (!cancellationToken.IsCancellationRequested)
                         {
-                            _outputStream.OnNext(new ReplProcessOutput(error, true));
-                            break;
+                            var readTask = process.StandardErrorReadAsync(cancellationToken);
+                            readTask.Wait(cancellationToken);
+
+                            error += (char) readTask.Result;
+
+                            if (error.EndsWith(Environment.NewLine))
+                            {
+                                _outputStream.OnNext(new ReplProcessOutput(error, true));
+                                break;
+                            }
                         }
+                    }
+                    catch (OperationCanceledException)
+                    {
                     }
                 }
             }, _scheduler);
         }
 
-        private void ExtractFSharpBinaries()
+        private static void ExtractFSharpBinaries()
         {
             var tempDirectory = Path.GetTempPath();
             var baseDirectory = Path.Combine(tempDirectory, BaseDirectory);
