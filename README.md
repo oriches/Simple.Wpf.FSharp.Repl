@@ -11,7 +11,7 @@ Supported versions:
 	
 This library will be made available as a nuget pacakge very soon - few small issues to resolve.
 
-Example usages of the control, with styles applied dynamically:
+Example usages of the control, with styles applied dynamically, these were taken from the Wpf.TestHarness project:
 
 ![alt text](https://raw.github.com/oriches/Simple.Wpf.FSharp.Repl/master/Readme%20Images/examples.png "Example usage using 2 different themes")
 
