@@ -54,6 +54,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ReplEngineControllerFixtures.cs" />
+    <Compile Include="ReplEngineFixtures.cs" />
+    <Compile Include="ReplEngineViewModelFixtures.cs" />
     <Compile Include="ReplOuputViewModelFixtures.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

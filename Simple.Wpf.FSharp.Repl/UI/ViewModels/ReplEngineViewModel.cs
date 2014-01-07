@@ -12,7 +12,7 @@
     using System.Windows.Input;
     using Commands;
     using Core;
-    using Repl.Services;
+    using Services;
 
     /// <summary>
     /// ViewModel for the REPL engine
