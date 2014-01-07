@@ -52,8 +52,7 @@ public sealed class MainViewModel
 XAML:
 ```
 <v:ReplWindow x:Name="ReplWindow"
-              Grid.Row="1"
-              DataContext="{Binding Path=Content, Mode=OneWay}" />
+              Grid.Row="1" />
 ```
 
 
