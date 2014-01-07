@@ -2,7 +2,7 @@
 {
     using System.Diagnostics;
 
-    public class ProcessService : IProcessService
+    public sealed class ProcessService : IProcessService
     {
         public void Start(string directory)
         {
