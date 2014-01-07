@@ -11,7 +11,7 @@
     using System.Threading;
     using ICSharpCode.SharpZipLib.Zip;
     using Properties;
-    using UI.Extensions;
+    using Services;
 
     /// <summary>
     /// Wrapper around the F# Interactive process.
@@ -38,11 +38,11 @@
 
         private readonly string _workingDirectory;
 
+        private readonly IProcessService _processService;
         private readonly IScheduler _scheduler;
         private readonly bool _anyCpu;
         private readonly Subject<ReplProcessOutput> _outputStream;
         private readonly BehaviorSubject<State> _stateStream;
-        private readonly ReplaySubject<string> _workingDirectoryStream;
         private readonly CompositeDisposable _disposable;
 
         private string _startupScript;
@@ -50,10 +50,10 @@
 
         internal sealed class ReplProcess : IDisposable
         {
-            private readonly Process _process;
+            private readonly IProcess _process;
             private readonly IDisposable _disposable;
 
-            public ReplProcess(Process process, IDisposable disposable)
+            public ReplProcess(IProcess process, IDisposable disposable)
             {
                 _process = process;
                 _disposable = disposable;
@@ -61,7 +61,7 @@
 
             public void Dispose()
             {
-                _process.StandardInput.WriteLine(QuitLine);
+                _process.WriteStandardInput(QuitLine);
                 _process.WaitForExit();
                 _process.Dispose();
 
@@ -70,7 +70,7 @@
 
             public void WriteLine(string script)
             {
-                _process.StandardInput.WriteLine(script);
+                _process.WriteStandardInput(script);
             }
         }
 
@@ -91,12 +91,14 @@
         /// Creates an instance of the REPL engine with the specified parameters.
         /// </summary>
         /// <param name="workingDirectory">The working directory for the F# Interactive process.</param>
+        /// <param name="processService">Handles creating windows processes.</param>
         /// <param name="scheduler">The Reactive scheduler for the REPL engine, defaults to the task pool scheduler.</param>
         /// <param name="anyCpu">Flag indicating whether to run as 32bit (false) or to determine at runtime (true).</param>
-        public ReplEngine(string workingDirectory = null, IScheduler scheduler = null, bool anyCpu = true)
+        public ReplEngine(string workingDirectory = null, IProcessService processService = null, IScheduler scheduler = null, bool anyCpu = true)
         {
             _scheduler = scheduler;
             _anyCpu = anyCpu;
+            _processService = processService ?? new ProcessService();
             _scheduler = scheduler ?? TaskPoolScheduler.Default;
 
             if (!string.IsNullOrWhiteSpace(workingDirectory))
@@ -111,13 +113,11 @@
 
             _stateStream = new BehaviorSubject<State>(Core.State.Unknown);
             _outputStream = new Subject<ReplProcessOutput>();
-            _workingDirectoryStream = new ReplaySubject<string>(1);
 
             _disposable = new CompositeDisposable
             {
                 _stateStream,
                 _outputStream,
-                _workingDirectoryStream
             };
         }
 
@@ -268,7 +268,7 @@
             }));
         }
 
-        private IObservable<Unit> ObserveStandardOutput(Process process, CancellationToken cancellationToken)
+        private IObservable<Unit> ObserveStandardOutput(IProcess process, CancellationToken cancellationToken)
         {
             return Observable.Start(() =>
             {
@@ -277,7 +277,7 @@
                     var output = string.Empty;
                     while (!cancellationToken.IsCancellationRequested)
                     {
-                        var readTask = process.StandardOutput.ReadAsync(cancellationToken);
+                        var readTask = process.StandardOutputReadAsync(cancellationToken);
                         readTask.Wait(cancellationToken);
 
                         output += (char)readTask.Result;
@@ -312,7 +312,7 @@
             }, _scheduler);
         }
 
-        private IObservable<Unit> ObserveStandardErrors(Process process, CancellationToken cancellationToken)
+        private IObservable<Unit> ObserveStandardErrors(IProcess process, CancellationToken cancellationToken)
         {
             return Observable.Start(() =>
             {
@@ -321,7 +321,7 @@
                     var error = string.Empty;
                     while (!cancellationToken.IsCancellationRequested)
                     {
-                        var readTask = process.StandardError.ReadAsync(cancellationToken);
+                        var readTask = process.StandardErrorReadAsync(cancellationToken);
                         readTask.Wait(cancellationToken);
 
                         error += (char)readTask.Result;
@@ -383,24 +383,13 @@
             return Path.Combine(binaryDirectory, execute);
         }
 
-        private Process CreateProcess()
+        private IProcess CreateProcess()
         {
-            var process = new Process
-            {
-                StartInfo =
-                {
-                    RedirectStandardError = true,
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardInput = true,
-                    WorkingDirectory = _workingDirectory,
-                    FileName = GetExecutablePath()
-                }
-            };
+            var executablePath = GetExecutablePath();
+            var process = _processService.StartReplExecutable(_workingDirectory, executablePath);
 
-            Debug.WriteLine("Working directory - " + process.StartInfo.WorkingDirectory);
-            Debug.WriteLine("File name - " + process.StartInfo.FileName);
+            Debug.WriteLine("Working directory - " + _workingDirectory);
+            Debug.WriteLine("File name - " + executablePath);
 
             return process;
         }

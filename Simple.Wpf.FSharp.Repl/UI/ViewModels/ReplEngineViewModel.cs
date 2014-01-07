@@ -12,7 +12,7 @@
     using System.Windows.Input;
     using Commands;
     using Core;
-    using Services;
+    using Repl.Services;
 
     /// <summary>
     /// ViewModel for the REPL engine
@@ -194,7 +194,7 @@
 
         private void OpenWorkingFolder()
         {
-            _processService.Start(_workingDirectory);
+            _processService.StartWindowsExplorer(_workingDirectory);
         }
     }
 }

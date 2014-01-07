@@ -5,7 +5,7 @@
     using System.Reactive.Disposables;
     using System.Reactive.Linq;
     using Core;
-    using Services;
+    using Repl.Services;
     using ViewModels;
 
     /// <summary>

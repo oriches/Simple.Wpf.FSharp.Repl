@@ -4,7 +4,7 @@
     using UI.ViewModels;
 
     [TestFixture]
-    public class ReplOuputViewModelTests
+    public class ReplOuputViewModelFixtures
     {
         [Test]
         public void is_errored()
