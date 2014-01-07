@@ -12,13 +12,15 @@
     using System.Windows.Input;
     using Commands;
     using Core;
+    using Services;
 
     /// <summary>
     /// ViewModel for the REPL engine
     /// </summary>
     public sealed class ReplEngineViewModel : BaseViewModel, IReplEngineViewModel, IDisposable
     {
-        private string _workingDirectory;
+        private readonly string _workingDirectory;
+        private readonly IProcessService _processService;
         private readonly CompositeDisposable _disposable;
         private readonly ObservableCollection<ReplLineViewModel> _output;
         private readonly Subject<Unit> _reset;
@@ -33,11 +35,15 @@
         /// <param name="replOutput">Reactive extensions stream of the REPL engine output.</param>
         /// <param name="replError">Reactive extensions stream of the REPL engine errors.</param>
         /// <param name="workingDirectory">Reactive extensions stream of the REPL engine working directory.</param>
+        /// <param name="processService">Handles starting windows processes.</param>
         public ReplEngineViewModel(IObservable<State> replState,
             IObservable<ReplLineViewModel> replOutput,
             IObservable<ReplLineViewModel> replError,
-            IObservable<string> workingDirectory)
+            string workingDirectory,
+            IProcessService processService)
         {
+            _workingDirectory = workingDirectory;
+            _processService = processService;
             _state = Core.State.Unknown;
             _output = new ObservableCollection<ReplLineViewModel>();
 
@@ -47,6 +53,7 @@
             ClearCommand = new ReplRelayCommand(Clear, CanClear);
             ResetCommand = new ReplRelayCommand(ResetImpl, CanReset);
             ExecuteCommand = new ReplRelayCommand<string>(ExecuteImpl, CanExecute);
+            OpenWorkingFolderCommand = new ReplRelayCommand(OpenWorkingFolder);
 
             _disposable = new CompositeDisposable
             {
@@ -70,8 +77,7 @@
                     {
                         _output.Add(x);
                         CommandManager.InvalidateRequerySuggested();
-                    }),
-                workingDirectory.Subscribe(UpdateWorkkingDirectory)
+                    })
             };
         }
 
@@ -119,6 +125,11 @@
         /// Executes the REPL engine commnad.
         /// </summary>
         public ICommand ExecuteCommand { get; private set; }
+
+        /// <summary>
+        /// Opens the working folder.
+        /// </summary>
+        public ICommand OpenWorkingFolderCommand { get; private set; }
 
         /// <summary>
         /// Is the REPL engine UI in read only mode.
@@ -181,10 +192,9 @@
             OnPropertyChanged("State");
         }
 
-        private void UpdateWorkkingDirectory(string workingDirectory)
+        private void OpenWorkingFolder()
         {
-            _workingDirectory = workingDirectory;
-            OnPropertyChanged("WorkingDirectory");
+            _processService.Start(_workingDirectory);
         }
     }
 }

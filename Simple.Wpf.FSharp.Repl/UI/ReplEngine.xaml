@@ -105,6 +105,9 @@
                         <MenuItem Header="Paste"
                                   InputGestureText="Ctrl+V"
                                   Command="ApplicationCommands.Paste" />
+                        <Separator />
+                        <MenuItem Header="Open Working Folder"
+                                  Command="{Binding Path=OpenWorkingFolderCommand, Mode=OneWay}" />
                     </ContextMenu>
                 </t:Terminal.ContextMenu>
 

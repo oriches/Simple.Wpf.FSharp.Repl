@@ -36,7 +36,7 @@
         private const string FSharpDirectory = @"fsharp";
         private const string ZipFilename = @"fsharp.zip";
 
-        private readonly string _baseWorkingDirectory;
+        private readonly string _workingDirectory;
 
         private readonly IScheduler _scheduler;
         private readonly bool _anyCpu;
@@ -61,33 +61,16 @@
 
             public void Dispose()
             {
-                var workingDirectory = _process.StartInfo.WorkingDirectory;
-
                 _process.StandardInput.WriteLine(QuitLine);
                 _process.WaitForExit();
                 _process.Dispose();
 
                 _disposable.Dispose();
-
-                SafeDirectoryDelete(workingDirectory);
             }
 
             public void WriteLine(string script)
             {
                 _process.StandardInput.WriteLine(script);
-            }
-
-            private static void SafeDirectoryDelete(string workingDirectory)
-            {
-                try
-                {
-                    Directory.Delete(workingDirectory, true);
-                }
-                catch (Exception exn)
-                {
-                    Debug.WriteLine("Failed to delete directory - " + workingDirectory);
-                    Debug.WriteLine("Exception message - " + exn.Message);
-                }
             }
         }
 
@@ -107,19 +90,23 @@
         /// <summary>
         /// Creates an instance of the REPL engine with the specified parameters.
         /// </summary>
-        /// <param name="baseWorkingDirectory">The base working directory for the F# Interactive process.</param>
+        /// <param name="workingDirectory">The working directory for the F# Interactive process.</param>
         /// <param name="scheduler">The Reactive scheduler for the REPL engine, defaults to the task pool scheduler.</param>
         /// <param name="anyCpu">Flag indicating whether to run as 32bit (false) or to determine at runtime (true).</param>
-        public ReplEngine(string baseWorkingDirectory = null, IScheduler scheduler = null, bool anyCpu = true)
+        public ReplEngine(string workingDirectory = null, IScheduler scheduler = null, bool anyCpu = true)
         {
             _scheduler = scheduler;
             _anyCpu = anyCpu;
             _scheduler = scheduler ?? TaskPoolScheduler.Default;
 
-            if (!string.IsNullOrWhiteSpace(baseWorkingDirectory))
+            if (!string.IsNullOrWhiteSpace(workingDirectory))
             {
-                _baseWorkingDirectory = baseWorkingDirectory.Trim();
-                Directory.CreateDirectory(_baseWorkingDirectory);
+                _workingDirectory = workingDirectory.Trim();
+                Directory.CreateDirectory(_workingDirectory);
+            }
+            else
+            {
+                _workingDirectory = Path.GetTempPath();
             }
 
             _stateStream = new BehaviorSubject<State>(Core.State.Unknown);
@@ -152,7 +139,7 @@
         /// <summary>
         /// REPL engine working directory as a Reactive extensions stream.
         /// </summary>
-        public IObservable<string> WorkingDirectory { get { return _workingDirectoryStream.DistinctUntilChanged(); } }
+        public string WorkingDirectory { get { return _workingDirectory; } }
 
         /// <summary>
         /// Starts the REPL engine.
@@ -384,7 +371,7 @@
             File.Delete(zipFilePath);
         }
 
-        private string CreateExecutablePath()
+        private string GetExecutablePath()
         {
             ExtractFSharpBinaries();
 
@@ -394,31 +381,6 @@
 
             var execute = _anyCpu ? ExecutableAnyCpu : Executable32Bit;
             return Path.Combine(binaryDirectory, execute);
-        }
-
-        private string CreateWorkingDirectory()
-        {
-            string workingDirectory;
-            if (string.IsNullOrEmpty(_baseWorkingDirectory))
-            {
-                var tempDirectory = Path.GetTempPath();
-                var baseDirectory = Path.Combine(tempDirectory, BaseDirectory);
-
-                workingDirectory = Path.Combine(baseDirectory, Guid.NewGuid().ToString());
-            }
-            else
-            {
-                workingDirectory = Path.Combine(_baseWorkingDirectory, Guid.NewGuid().ToString());
-            }
-
-            var di = new DirectoryInfo(workingDirectory);
-            if (!di.Exists)
-            {
-                di.Create();
-            }
-
-            _workingDirectoryStream.OnNext(workingDirectory);
-            return workingDirectory;
         }
 
         private Process CreateProcess()
@@ -432,8 +394,8 @@
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardInput = true,
-                    WorkingDirectory = CreateWorkingDirectory(),
-                    FileName = CreateExecutablePath()
+                    WorkingDirectory = _workingDirectory,
+                    FileName = GetExecutablePath()
                 }
             };
 

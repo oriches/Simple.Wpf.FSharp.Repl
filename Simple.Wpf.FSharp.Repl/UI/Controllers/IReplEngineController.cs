@@ -14,11 +14,6 @@
         IReplEngineViewModel ViewModel { get; }
 
         /// <summary>
-        /// The current working directory for the REPL engine.
-        /// </summary>
-        IObservable<string> WorkingDirectory { get; } 
-
-        /// <summary>
         /// Execute the script
         /// </summary>
         /// <param name="script">The script to execute.</param>

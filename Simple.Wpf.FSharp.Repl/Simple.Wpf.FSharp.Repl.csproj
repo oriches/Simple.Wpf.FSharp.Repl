@@ -85,10 +85,12 @@
     </Compile>
     <Compile Include="Core\State.cs" />
     <Compile Include="UI\ViewModels\BaseViewModel.cs" />
+    <Compile Include="UI\Services\IProcessService.cs" />
     <Compile Include="UI\ViewModels\IReplEngineViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\Commands\ReplRelayCommand.cs" />
     <Compile Include="Core\ReplEngine.cs" />
+    <Compile Include="UI\Services\ProcessService.cs" />
     <Compile Include="UI\ViewModels\ReplLineViewModel.cs" />
     <Compile Include="UI\ReplWindow.xaml.cs">
       <DependentUpon>ReplWindow.xaml</DependentUpon>

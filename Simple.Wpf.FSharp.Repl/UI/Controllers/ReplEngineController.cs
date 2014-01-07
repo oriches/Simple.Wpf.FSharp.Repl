@@ -5,6 +5,7 @@
     using System.Reactive.Disposables;
     using System.Reactive.Linq;
     using Core;
+    using Services;
     using ViewModels;
 
     /// <summary>
@@ -13,6 +14,7 @@
     public sealed class ReplEngineController : IReplEngineController, IDisposable
     {
         private readonly string _startupScript;
+        private readonly IProcessService _processService;
         private readonly IReplEngine _replEngine;
         private readonly IScheduler _dispatcherScheduler;
         private readonly IScheduler _taskPoolScheduler;
@@ -45,15 +47,18 @@
         /// <param name="startupScript">The script to run at startup, default is null.</param>
         /// <param name="baseDirectory">The base directory, default is null.</param>
         /// <param name="replEngine">The REPL engine.</param>
+        /// <param name="processService">Service for starting windows processes.</param>
         /// <param name="dispatcherScheduler">The Reactive extensions shceduler for the UI thread (dispatcher).</param>
         /// <param name="taskScheduler">The Reactive extensiosn scheduler for the task pool scheduler.</param>
         public ReplEngineController(string startupScript = null,
             string baseDirectory = null,
             IReplEngine replEngine = null,
+            IProcessService processService = null,
             IScheduler dispatcherScheduler = null,
             IScheduler taskScheduler = null)
         {
             _startupScript = startupScript;
+            _processService = processService ?? new ProcessService();
             _disposable = new CompositeDisposable();
 
             _replEngine = replEngine ?? CreateEngine(baseDirectory);
@@ -75,14 +80,6 @@
         public IReplEngineViewModel ViewModel
         {
             get { return _viewModel ?? (_viewModel = CreateViewModelAndStartEngine()); }
-        }
-
-        /// <summary>
-        /// The working directory for the REPL engine.
-        /// </summary>
-        public IObservable<string> WorkingDirectory
-        {
-            get { return _replEngine.WorkingDirectory.ObserveOn(_dispatcherScheduler); }
         }
 
         /// <summary>
@@ -115,10 +112,7 @@
             var stateStream = _replEngine.State
                        .ObserveOn(_dispatcherScheduler);
 
-            var workingDirectoryStream = _replEngine.WorkingDirectory
-                .ObserveOn(_dispatcherScheduler);
-
-            IReplEngineViewModel viewModel = new ReplEngineViewModel(stateStream, outputStream, errorStream, workingDirectoryStream);
+            IReplEngineViewModel viewModel = new ReplEngineViewModel(stateStream, outputStream, errorStream, _replEngine.WorkingDirectory, _processService);
 
             _disposable.Add(viewModel.Reset
                .ObserveOn(_taskPoolScheduler)
