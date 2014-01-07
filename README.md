@@ -9,7 +9,7 @@ Supported versions:
 
 	.NET framework 4.0 and higher,
 	
-This library will be made available as a nuget pacakge very soon - few small issues to resolve.
+This library is available as a nuget [package] (https://www.nuget.org/packages/Simple.Wpf.FSharp.Repl/).
 
 Example usages of the control, with styles applied dynamically, these were taken from the Wpf.TestHarness project:
 
