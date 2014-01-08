@@ -50,7 +50,8 @@ public sealed class MainViewModel
 XAML:
 ```
 <v:ReplEngine x:Name="ReplEngine"
-              Grid.Row="1" />
+              Grid.Row="1"
+              DataContext="{Binding Path=Content, Mode=OneWay}"/>
 ```
 
 
