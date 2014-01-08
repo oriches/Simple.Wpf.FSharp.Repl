@@ -23,8 +23,6 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-
-        ReplWindow.DataContext = new ReplWindowController("let ollie = 1337;;").ViewModel;
     }
 }
 ```
@@ -38,20 +36,20 @@ XAML:
 ```
 public sealed class MainViewModel
 {
-    private readonly IReplWindowController _controller;
+    private readonly IReplEngineController _controller;
 
     public MainViewModel()
     {
-        _controller = new ReplWindowController("let ollie = 1337;;");
+        _controller = new ReplEngineController("let ollie = 1337;;");
     }
 
-    public IReplWindowViewModel Content { get { return _controller.ViewModel; } }
+    public IReplEngineViewModel Content { get { return _controller.ViewModel; } }
 }
 ```
 
 XAML:
 ```
-<v:ReplWindow x:Name="ReplWindow"
+<v:ReplEngine x:Name="ReplEngine"
               Grid.Row="1" />
 ```
 
