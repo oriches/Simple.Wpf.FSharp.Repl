@@ -10,7 +10,7 @@
              d:DesignHeight="200"
              d:DesignWidth="600"
              d:DataContext="{d:DesignInstance vm:ReplEngineViewModel}">
-
+    
     <Grid Margin="5"
           Style="{DynamicResource ReplGridStyle}">
 
