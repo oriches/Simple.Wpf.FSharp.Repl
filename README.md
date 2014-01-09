@@ -9,7 +9,7 @@ Supported versions:
 
 	.NET framework 4.0 and higher,
 	
-This library will be made available as a nuget pacakge very soon - few small issues to resolve.
+This library is available as a nuget [package] (https://www.nuget.org/packages/Simple.Wpf.FSharp.Repl/).
 
 Example usages of the control, with styles applied dynamically, these were taken from the Wpf.TestHarness project:
 
@@ -23,8 +23,6 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-
-        ReplWindow.DataContext = new ReplWindowController("let ollie = 1337;;").ViewModel;
     }
 }
 ```
@@ -38,22 +36,22 @@ XAML:
 ```
 public sealed class MainViewModel
 {
-    private readonly IReplWindowController _controller;
+    private readonly IReplEngineController _controller;
 
     public MainViewModel()
     {
-        _controller = new ReplWindowController("let ollie = 1337;;");
+        _controller = new ReplEngineController("let ollie = 1337;;");
     }
 
-    public IReplWindowViewModel Content { get { return _controller.ViewModel; } }
+    public IReplEngineViewModel Content { get { return _controller.ViewModel; } }
 }
 ```
 
 XAML:
 ```
-<v:ReplWindow x:Name="ReplWindow"
+<v:ReplEngine x:Name="ReplEngine"
               Grid.Row="1"
-              DataContext="{Binding Path=Content, Mode=OneWay}" />
+              DataContext="{Binding Path=Content, Mode=OneWay}"/>
 ```
 
 
