@@ -2,9 +2,9 @@
 {
     using NUnit.Framework;
     using UI.ViewModels;
-
+    
     [TestFixture]
-    public class ReplOuputViewModelFixtures
+    public class ReplLineViewModelFixtures
     {
         [Test]
         public void is_errored()
