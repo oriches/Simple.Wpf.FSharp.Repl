@@ -45,13 +45,13 @@
         /// Creates an instance of the controller.
         /// </summary>
         /// <param name="startupScript">The script to run at startup, default is null.</param>
-        /// <param name="baseDirectory">The base directory, default is null.</param>
+        /// <param name="workingDirectory">The working directory, default is null.</param>
         /// <param name="replEngine">The REPL engine.</param>
         /// <param name="processService">Service for starting windows processes.</param>
         /// <param name="dispatcherScheduler">The Reactive extensions shceduler for the UI thread (dispatcher).</param>
         /// <param name="taskScheduler">The Reactive extensiosn scheduler for the task pool scheduler.</param>
         public ReplEngineController(string startupScript = null,
-            string baseDirectory = null,
+            string workingDirectory = null,
             IReplEngine replEngine = null,
             IProcessService processService = null,
             IScheduler dispatcherScheduler = null,
@@ -61,7 +61,7 @@
             _processService = processService ?? new ProcessService();
             _disposable = new CompositeDisposable();
 
-            _replEngine = replEngine ?? CreateEngine(baseDirectory);
+            _replEngine = replEngine ?? CreateEngine(workingDirectory);
             _dispatcherScheduler = dispatcherScheduler ?? DispatcherScheduler.Current;
             _taskPoolScheduler = taskScheduler ?? TaskPoolScheduler.Default;
         }

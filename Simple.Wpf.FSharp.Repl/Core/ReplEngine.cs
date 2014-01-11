@@ -36,6 +36,8 @@
         private const string FSharpDirectory = @"fsharp";
         private const string ZipFilename = @"fsharp.zip";
 
+        private const string WorkingDirectoryOutput = "Working folder = \"{0}\"";
+
         private readonly string _workingDirectory;
 
         private readonly IProcessService _processService;
@@ -104,7 +106,12 @@
             if (!string.IsNullOrWhiteSpace(workingDirectory))
             {
                 _workingDirectory = workingDirectory.Trim();
-                Directory.CreateDirectory(_workingDirectory);
+                var directoryInfo = new DirectoryInfo(_workingDirectory);
+
+                if (!directoryInfo.Exists)
+                {
+                    directoryInfo.Create();
+                }
             }
             else
             {
@@ -272,6 +279,9 @@
         {
             return Observable.Start(() =>
             {
+                _outputStream.OnNext(new ReplProcessOutput(string.Format(WorkingDirectoryOutput, _workingDirectory)));
+                _outputStream.OnNext(new ReplProcessOutput(Environment.NewLine));
+
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     var output = string.Empty;
