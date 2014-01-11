@@ -26,9 +26,9 @@
         /// Creates an instance of the controller.
         /// </summary>
         /// <param name="startupScript">The script to run at startup, default is null.</param>
-        /// <param name="baseDirectory">The base directory, default is null.</param>
-        public ReplEngineController(string startupScript, string baseDirectory)
-            : this(startupScript, baseDirectory, null, null, null)
+        /// <param name="workingDirectory">The working directory, default is null.</param>
+        public ReplEngineController(string startupScript, string workingDirectory)
+            : this(startupScript, workingDirectory, null, null, null)
         {
         }
 
