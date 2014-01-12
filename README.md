@@ -11,6 +11,8 @@ Supported versions:
 	
 This library is available as a nuget [package] (https://www.nuget.org/packages/Simple.Wpf.FSharp.Repl/).
 
+For more information about the releases see [Release Info] (https://github.com/oriches/Simple.Wpf.FSharp.Repl/wiki/Release-Info).
+
 Example usages of the control, with styles applied dynamically, these were taken from the Wpf.TestHarness project:
 
 ![alt text](https://raw.github.com/oriches/Simple.Wpf.FSharp.Repl/master/Readme%20Images/examples.png "Example usage using 2 different themes")
