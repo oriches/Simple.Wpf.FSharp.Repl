@@ -34,6 +34,9 @@
       <HintPath>..\packages\Rx-Testing.2.2.2\lib\net40\Microsoft.Reactive.Testing.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.2.1312.1622\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -59,8 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MockProcess.cs" />
-    <Compile Include="MockProcessService.cs" />
+    <Compile Include="Extensions\TestSchedulerExtensions.cs" />
     <Compile Include="ReplEngineControllerFixtures.cs" />
     <Compile Include="ReplEngineFixtures.cs" />
     <Compile Include="ReplEngineViewModelFixtures.cs" />

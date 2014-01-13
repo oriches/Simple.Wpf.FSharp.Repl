@@ -1,7 +1,7 @@
 ﻿namespace Simple.Wpf.FSharp.Repl.UI.Controllers
 {
     using System;
-    using UI.ViewModels;
+    using ViewModels;
 
     /// <summary>
     /// Controller for the REPL engine, exposes the ViewModel.

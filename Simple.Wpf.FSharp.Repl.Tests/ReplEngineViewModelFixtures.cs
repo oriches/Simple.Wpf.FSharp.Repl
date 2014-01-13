@@ -2,12 +2,13 @@
 {
     using System;
     using System.Linq;
-    using System.Reactive.Concurrency;
     using System.Reactive.Linq;
     using System.Reactive.Subjects;
     using Core;
     using Microsoft.Reactive.Testing;
+    using Moq;
     using NUnit.Framework;
+    using Services;
     using UI.ViewModels;
 
     [TestFixture]
@@ -17,10 +18,11 @@
         private Subject<ReplLineViewModel> _replOutputSubject;
         private Subject<ReplLineViewModel> _replErrorSubject;
         private string _workingDirectory;
-        private MockProcessService _processService;
+        private Mock<IProcessService> _processService;
         private ReplEngineViewModel _viewModel;
 
         private TestScheduler _scheduler;
+        private Mock<IProcess> _process;
 
         [SetUp]
         public void SetUp()
@@ -28,12 +30,14 @@
             _stateSubject = new Subject<State>();
             _replOutputSubject = new Subject<ReplLineViewModel>();
             _replErrorSubject = new Subject<ReplLineViewModel>();
-            _workingDirectory = "c:\temp\fhsarp";
-            _processService = new MockProcessService();
+            _workingDirectory = @"c:\temp\fhsarp";
 
+            _process = new Mock<IProcess>();
+            _processService = new Mock<IProcessService>(MockBehavior.Strict);
+            
             _scheduler = new TestScheduler();
 
-            _viewModel = new ReplEngineViewModel(_stateSubject, _replOutputSubject, _replErrorSubject, _workingDirectory, _processService);
+            _viewModel = new ReplEngineViewModel(_stateSubject, _replOutputSubject, _replErrorSubject, _workingDirectory, _processService.Object);
         }
 
         [Test]
@@ -120,12 +124,13 @@
         public void opens_working_folder()
         {
             // ARRANGE
+            _processService.Setup(x => x.StartWindowsExplorer(It.IsAny<string>())).Returns(_process.Object).Verifiable();
+
             // ACT
             _viewModel.OpenWorkingFolderCommand.Execute(null);
 
             // ASSERT
-            Assert.That(_processService.StartWindowsExplorerCalled, Is.EqualTo(1));
-            Assert.That(_processService.StartWindowsExplorerDirectory, Is.EqualTo(_viewModel.WorkingDirectory));
+            _processService.Verify(x => x.StartWindowsExplorer(_workingDirectory), Times.Once);
         }
 
         [Test]
