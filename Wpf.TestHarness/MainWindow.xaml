@@ -28,7 +28,7 @@
                   Grid.Column="0"
                   Grid.ColumnSpan="2"
                   Focusable="True"
-                  FocusManager.FocusedElement="{Binding ElementName=ThemeControl}" />
+                  FocusManager.FocusedElement="{Binding ElementName=ThemeControl, Mode=OneTime}" />
 
         <TextBlock Grid.Row="1"
                    Grid.Column="0"
@@ -46,7 +46,7 @@
         <ui:ReplWindow x:Name="ReplWindow"
                        Grid.Row="2"
                        Grid.Column="0"
-                       Grid.ColumnSpan="2" />
+                       Grid.ColumnSpan="2"/>
 
     </Grid>
 </Window>

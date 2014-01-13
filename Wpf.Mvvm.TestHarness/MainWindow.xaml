@@ -30,7 +30,7 @@
                        Grid.Column="0"
                        Grid.ColumnSpan="2"
                        Focusable="True"
-                       FocusManager.FocusedElement="{Binding ElementName=ThemeControl}" />
+                       FocusManager.FocusedElement="{Binding ElementName=ThemeControl, Mode=OneWay}" />
 
         <TextBlock Grid.Row="1"
                    Grid.Column="0"

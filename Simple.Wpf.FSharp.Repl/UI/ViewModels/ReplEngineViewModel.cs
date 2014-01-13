@@ -19,6 +19,8 @@
     /// </summary>
     public sealed class ReplEngineViewModel : BaseViewModel, IReplEngineViewModel, IDisposable
     {
+        private const string PromptText = "> ";
+
         private readonly string _workingDirectory;
         private readonly IProcessService _processService;
         private readonly CompositeDisposable _disposable;
@@ -84,12 +86,28 @@
         /// <summary>
         /// The REPL engine prompt.
         /// </summary>
-        public string Prompt { get { return "> "; } }
+        public string Prompt
+        {
+            get
+            {
+                return _state == Core.State.Running ? PromptText : string.Empty;
+            }
+        }
 
         /// <summary>
         /// The REPL engine state.
         /// </summary>
-        public string State { get { return  _state == Core.State.Executing ? "Executing" : string.Empty; } }
+        public string State
+        {
+            get
+            {
+                return _state == Core.State.Running
+                    || _state == Core.State.Stopped
+                    || _state == Core.State.Unknown
+                    ? string.Empty
+                    : string.Intern(_state.ToString());
+            }
+        }
 
         /// <summary>
         /// The REPL engine working directory.
@@ -185,11 +203,15 @@
 
         private void UpdateState(State state)
         {
-            Debug.WriteLine("state = " + state);
+            if (_state != state)
+            {
+                Debug.WriteLine("state = " + state);
 
-            _state = state;
-            OnPropertyChanged("IsReadOnly");
-            OnPropertyChanged("State");
+                _state = state;
+                OnPropertyChanged("State");
+                OnPropertyChanged("Prompt");
+                OnPropertyChanged("IsReadOnly");
+            }
         }
 
         private void OpenWorkingFolder()

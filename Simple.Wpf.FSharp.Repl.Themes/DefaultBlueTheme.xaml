@@ -14,7 +14,7 @@
         <Setter Property="Background"
                 Value="Black" />
         <Setter Property="Foreground"
-                Value="Blue" />
+                Value="DeepSkyBlue" />
         <Setter Property="ItemErrorColor"
                 Value="Red" />
         <Setter Property="ItemsMargin"
