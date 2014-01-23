@@ -6,7 +6,7 @@
     public enum State
     {
         /// <summary>
-        /// REPL engine is in an unknown state
+        /// REPL engine is in an unknown state.
         /// </summary>
         Unknown = -1,
 

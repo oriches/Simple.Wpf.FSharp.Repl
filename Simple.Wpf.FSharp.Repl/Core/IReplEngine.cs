@@ -47,9 +47,9 @@
         IReplEngine Reset();
 
         /// <summary>
-        /// Executes the scrpts, if the REPL engine has been started.
+        /// Executes the scripts, if the REPL engine has been started.
         /// </summary>
-        /// <param name="script">The script to be executed</param>
+        /// <param name="script">The script to be executed.</param>
         /// <returns>Returns the REPL engine.</returns>
         IReplEngine Execute(string script);
     }

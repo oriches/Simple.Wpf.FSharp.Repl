@@ -44,7 +44,7 @@
         /// <summary>
         ///  Execute a script with the REPL engine.
         /// </summary>
-        /// <param name="script"></param>
+        /// <param name="script">The script to execute.</param>
         public void ExecuteScript(string script)
         {
             if (_controller != null)

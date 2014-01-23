@@ -5,14 +5,14 @@
     using UI.Extensions;
 
     /// <summary>
-    /// Wraps System.Diagnostics.Process
+    /// Wraps an System.Diagnostics.Process instance.
     /// </summary>
     public sealed class Process : IProcess
     {
         private readonly System.Diagnostics.Process _process;
 
         /// <summary>
-        /// Creates a wrapper around the System.Diagnostics.Process
+        /// Creates a wrapper around an System.Diagnostics.Process instance.
         /// </summary>
         /// <param name="process">The System.Diagnostics.Process instance.</param>
         public Process(System.Diagnostics.Process process)
