@@ -59,4 +59,4 @@ XAML:
 
 ### Blog post about developing this control
 
-There is a set of blog posts which detail the journey of creating this control & nuget package - [part 1](http://awkwardcoder.blogspot.co.uk/2013/12/simple-f-repl-in-wpf-part-1.html), [part 2](http://awkwardcoder.blogspot.co.uk/2013/12/simple-f-repl-in-wpf-part-2.html), [part 3](http://awkwardcoder.blogspot.co.uk/2013/12/simple-f-repl-in-wpf-part-3.html) & [part 4] (http://awkwardcoder.blogspot.co.uk/2013/12/simple-f-repl-in-wpf-part-4.html).
+There is a set of blog posts which detail the journey of creating this control & nuget package - [part 1](http://awkwardcoder.blogspot.co.uk/2013/12/simple-f-repl-in-wpf-part-1.html), [part 2](http://awkwardcoder.blogspot.co.uk/2013/12/simple-f-repl-in-wpf-part-2.html), [part 3](http://awkwardcoder.blogspot.co.uk/2013/12/simple-f-repl-in-wpf-part-3.html) & [part 4] (http://awkwardcoder.blogspot.co.uk/2014/01/simple-f-repl-in-wpf-part-4.html).
