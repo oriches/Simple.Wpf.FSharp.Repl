@@ -5,14 +5,14 @@
     using UI.Extensions;
 
     /// <summary>
-    /// Wraps an System.Diagnostics.Process instance.
+    /// Wraps the .Net System.Diagnostics.Process class.
     /// </summary>
     public sealed class Process : IProcess
     {
         private readonly System.Diagnostics.Process _process;
 
         /// <summary>
-        /// Creates a wrapper around an System.Diagnostics.Process instance.
+        /// Creates a wrapper around an instance of the .Net System.Diagnostics.Process class.
         /// </summary>
         /// <param name="process">The System.Diagnostics.Process instance.</param>
         public Process(System.Diagnostics.Process process)
@@ -29,7 +29,7 @@
         }
 
         /// <summary>
-        /// Start the process.
+        /// Start the .Net process.
         /// </summary>
         public void Start()
         {
@@ -37,7 +37,7 @@
         }
 
         /// <summary>
-        /// Wait for the process to exit.
+        /// Waits for the .Net process to exit.
         /// </summary>
         public void WaitForExit()
         {
@@ -45,7 +45,7 @@
         }
 
         /// <summary>
-        /// Writes to the input stream of the process.
+        /// Writes to the input stream of the .Net process.
         /// </summary>
         /// <param name="line">The line to written to the input stream.</param>
         public void WriteStandardInput(string line)
@@ -54,7 +54,7 @@
         }
 
         /// <summary>
-        /// Read the output stream of the process asynchronuously.
+        /// Reads the output stream of the .Net process asynchronuously.
         /// </summary>
         /// <param name="cancellationToken">The task cancellation token.</param>
         /// <returns>Returns the asynchronously read output.</returns>
@@ -64,7 +64,7 @@
         }
 
         /// <summary>
-        /// Read the error stream of the process asynchronuously.
+        /// Reads the error stream of the .Net process asynchronuously.
         /// </summary>
         /// <param name="cancellationToken">The task cancellation token.</param>
         /// <returns>Returns the asynchronously read error.</returns>

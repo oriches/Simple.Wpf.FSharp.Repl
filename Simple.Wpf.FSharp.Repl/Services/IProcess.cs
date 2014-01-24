@@ -5,35 +5,35 @@
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Wraps System.Diagnostics.Process
+    /// Wraps the .Net System.Diagnostics.Process class.
     /// </summary>
     public interface IProcess : IDisposable
     {
         /// <summary>
-        /// Start the process.
+        /// Start the .Net process.
         /// </summary>
         void Start();
 
         /// <summary>
-        /// Wait for the process to exit.
+        /// Waits for the .Net process to exit.
         /// </summary>
         void WaitForExit();
 
         /// <summary>
-        /// Writes to the input stream of the process.
+        /// Writes to the input stream of the .Net process.
         /// </summary>
         /// <param name="line">The line to written to the input stream.</param>
         void WriteStandardInput(string line);
 
         /// <summary>
-        /// Read the output stream of the process asynchronuously.
+        /// Reads the output stream of the .Net process asynchronuously.
         /// </summary>
         /// <param name="cancellationToken">The task cancellation token.</param>
         /// <returns>Returns the asynchronously read ouput.</returns>
         Task<int> StandardOutputReadAsync(CancellationToken cancellationToken);
 
         /// <summary>
-        /// Read the error stream of the process asynchronuously.
+        /// Reads the error stream of the .Net process asynchronuously.
         /// </summary>
         /// <param name="cancellationToken">The task cancellation token.</param>
         /// <returns>Returns the asynchronously read error.</returns>

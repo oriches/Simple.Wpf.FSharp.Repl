@@ -41,13 +41,13 @@
         IReplEngine Stop();
 
         /// <summary>
-        /// Reset the REPL engine if it has already been started.
+        /// Reset the REPL engine, if it has already been started.
         /// </summary>
         /// <returns>Returns the REPL engine.</returns>
         IReplEngine Reset();
 
         /// <summary>
-        /// Executes the scripts, if the REPL engine has been started.
+        /// Executes a scripts, if the REPL engine has been started.
         /// </summary>
         /// <param name="script">The script to be executed.</param>
         /// <returns>Returns the REPL engine.</returns>
