@@ -66,14 +66,6 @@
             _taskPoolScheduler = taskScheduler ?? TaskPoolScheduler.Default;
         }
 
-        private IReplEngine CreateEngine(string workingDirectory)
-        {
-            var replEngine = new ReplEngine(workingDirectory);
-            _disposable.Add(replEngine);
-
-            return replEngine;
-        }
-
         /// <summary>
         /// The ViewModel for the REPL engine.
         /// </summary>
@@ -125,6 +117,14 @@
             _replEngine.Start(_startupScript);
 
             return viewModel;
+        }
+
+        private IReplEngine CreateEngine(string workingDirectory)
+        {
+            var replEngine = new ReplEngine(workingDirectory);
+            _disposable.Add(replEngine);
+
+            return replEngine;
         }
     }
 }

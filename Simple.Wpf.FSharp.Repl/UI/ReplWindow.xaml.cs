@@ -42,7 +42,7 @@
         }
 
         /// <summary>
-        ///  Execute a script with the REPL engine.
+        /// Execute a script with the REPL engine.
         /// </summary>
         /// <param name="script">The script to execute.</param>
         public void ExecuteScript(string script)

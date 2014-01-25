@@ -3,7 +3,7 @@
     using System.Windows.Controls;
 
     /// <summary>
-    /// REPL engine UI
+    /// REPL engine UI.
     /// </summary>
     public partial class ReplEngine : UserControl
     {

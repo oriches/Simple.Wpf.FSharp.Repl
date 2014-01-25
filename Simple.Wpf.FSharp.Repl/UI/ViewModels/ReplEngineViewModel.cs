@@ -15,7 +15,7 @@
     using Services;
 
     /// <summary>
-    /// ViewModel for the REPL engine
+    /// ViewModel for the REPL engine.
     /// </summary>
     public sealed class ReplEngineViewModel : BaseViewModel, IReplEngineViewModel, IDisposable
     {

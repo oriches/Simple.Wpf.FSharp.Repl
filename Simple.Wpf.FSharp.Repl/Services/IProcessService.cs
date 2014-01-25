@@ -1,7 +1,7 @@
 ﻿namespace Simple.Wpf.FSharp.Repl.Services
 {
     /// <summary>
-    /// Service starting .Net System.Diagnostics.Process instances for F# REPL engine &amp Windows Explorer.
+    /// Service starting .Net System.Diagnostics.Process instances for F# REPL engine &amp; Windows Explorer.
     /// </summary>
     public interface IProcessService
     {
