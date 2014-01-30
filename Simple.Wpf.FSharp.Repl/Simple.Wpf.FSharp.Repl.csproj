@@ -37,13 +37,13 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Simple.Wpf.Terminal, Version=1.17.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Simple.Wpf.Terminal, Version=1.20.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Simple.Wpf.Terminal.1.17.0.0\lib\net40\Simple.Wpf.Terminal.dll</HintPath>
+      <HintPath>..\packages\Simple.Wpf.Terminal.1.20.0.0\lib\net40\Simple.Wpf.Terminal.dll</HintPath>
     </Reference>
-    <Reference Include="Simple.Wpf.Terminal.Themes, Version=1.17.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Simple.Wpf.Terminal.Themes, Version=1.20.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Simple.Wpf.Terminal.1.17.0.0\lib\net40\Simple.Wpf.Terminal.Themes.dll</HintPath>
+      <HintPath>..\packages\Simple.Wpf.Terminal.1.20.0.0\lib\net40\Simple.Wpf.Terminal.Themes.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -57,8 +57,9 @@
     <Reference Include="System.Reactive.Linq">
       <HintPath>..\packages\Rx-Linq.2.2.2\lib\net40\System.Reactive.Linq.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\packages\Rx-PlatformServices.2.2.2\lib\net40\System.Reactive.PlatformServices.dll</HintPath>
+    <Reference Include="System.Reactive.PlatformServices, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Rx-PlatformServices.2.2.3\lib\net40\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Windows.Threading">
       <HintPath>..\packages\Rx-XAML.2.2.2\lib\net40\System.Reactive.Windows.Threading.dll</HintPath>
