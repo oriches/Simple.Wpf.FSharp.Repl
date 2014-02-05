@@ -8,6 +8,7 @@
     using System.Reactive.Disposables;
     using System.Reactive.Linq;
     using System.Reactive.Subjects;
+    using System.Reflection;
     using System.Threading;
     using ICSharpCode.SharpZipLib.Zip;
     using Properties;
@@ -362,37 +363,75 @@
 
         private static void ExtractFSharpBinaries()
         {
-            var tempDirectory = Path.GetTempPath();
-            var baseDirectory = Path.Combine(tempDirectory, BaseDirectory);
-            var binaryDirectory = Path.Combine(baseDirectory, FSharpDirectory);
-
-            if (Directory.Exists(binaryDirectory))
+            try
             {
-                return;
-            }
+                var tempDirectory = Path.GetTempPath();
+                var baseDirectory = Path.Combine(tempDirectory, BaseDirectory);
+                var binaryDirectory = Path.Combine(baseDirectory, FSharpDirectory);
 
-            var di = new DirectoryInfo(baseDirectory);
-            if (!di.Exists)
+                if (Directory.Exists(binaryDirectory))
+                {
+                    if (DoesVersionFileExist(binaryDirectory))
+                    {
+                        return;
+                    }
+                }
+
+                var di = new DirectoryInfo(baseDirectory);
+                if (!di.Exists)
+                {
+                    di.Create();
+                }
+
+                di = new DirectoryInfo(binaryDirectory);
+                if (!di.Exists)
+                {
+                    di.Create();
+                }
+                else
+                {
+                    foreach (var file in di.EnumerateFiles())
+                    {
+                        file.Delete();
+                    }
+                }
+
+                var zipFilePath = Path.Combine(binaryDirectory, ZipFilename);
+                using (var stream = File.Create(zipFilePath))
+                {
+                    stream.Write(Resources.FSharp, 0, Resources.FSharp.Length);
+                }
+
+                var zipper = new FastZip();
+                zipper.ExtractZip(zipFilePath, binaryDirectory, FastZip.Overwrite.Always, null, null, null, true);
+
+                File.Delete(zipFilePath);
+
+                CreateVersionfile(binaryDirectory);
+            }
+            catch (Exception)
             {
-                di.Create();
             }
+        }
 
-            di = new DirectoryInfo(binaryDirectory);
-            if (!di.Exists)
-            {
-                di.Create();
-            }
+        private static void CreateVersionfile(string binaryDirectory)
+        {
+            var versionNumber = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            var versionFile = string.Format("{0}.txt", versionNumber);
 
-            var zipFilePath = Path.Combine(binaryDirectory, ZipFilename);
-            using (var stream = File.Create(zipFilePath))
-            {
-                stream.Write(Resources.FSharp, 0, Resources.FSharp.Length);
-            }
+            var versionFilePath = Path.Combine(binaryDirectory, versionFile);
 
-            var zipper = new FastZip();
-            zipper.ExtractZip(zipFilePath, binaryDirectory, FastZip.Overwrite.Always, null, null, null, true);
+            File.CreateText(versionFilePath).Dispose();
+        }
 
-            File.Delete(zipFilePath);
+        private static bool DoesVersionFileExist(string binaryDirectory)
+        {
+            var versionNumber = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            var versionFile = string.Format("{0}.txt", versionNumber);
+
+            var versionFilePath = Path.Combine(binaryDirectory, versionFile);
+
+            return File.Exists(versionFilePath);
         }
 
         private string GetExecutablePath()
