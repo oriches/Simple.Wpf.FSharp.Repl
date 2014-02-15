@@ -55,6 +55,7 @@
         {
             private readonly IProcess _process;
             private readonly IDisposable _disposable;
+            private bool _disposed;
 
             public ReplProcess(IProcess process, IDisposable disposable)
             {
@@ -62,13 +63,32 @@
                 _disposable = disposable;
             }
 
+             // Use C# destructor syntax for finalization code.
+            ~ReplProcess()
+            {
+                DisposeImpl(false);
+            }
+
             public void Dispose()
             {
-                _process.WriteStandardInput(QuitLine);
-                _process.WaitForExit();
-                
-                _disposable.Dispose();
-                _process.Dispose();
+                DisposeImpl(true);
+                GC.SuppressFinalize(this);
+            }
+
+            private void DisposeImpl(bool disposing)
+            {
+                if (!_disposed)
+                {
+                    if (disposing)
+                    {
+                        _process.WriteStandardInput(QuitLine);
+                        _process.WaitForExit();
+                        _process.Dispose();
+                    }
+
+                    _disposable.Dispose();
+                    _disposed = true;
+                }
             }
 
             public void WriteLine(string script)
