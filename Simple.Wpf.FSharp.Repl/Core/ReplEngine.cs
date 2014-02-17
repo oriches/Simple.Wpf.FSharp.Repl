@@ -301,7 +301,6 @@
             return Observable.Start(() =>
             {
                 _outputStream.OnNext(new ReplProcessOutput(string.Format(WorkingDirectoryOutput, _workingDirectory)));
-                _outputStream.OnNext(new ReplProcessOutput(Environment.NewLine));
 
                 while (!cancellationToken.IsCancellationRequested)
                 {
@@ -318,12 +317,9 @@
 
                             if (output == AwaitingInput)
                             {
-                                _outputStream.OnNext(new ReplProcessOutput(output));
-
                                 if (_stateStream.First() == Core.State.Starting && !string.IsNullOrEmpty(_startupScript))
                                 {
-                                    _outputStream.OnNext(new ReplProcessOutput(_startupScript));
-                                    _outputStream.OnNext(new ReplProcessOutput(Environment.NewLine));
+                                    _outputStream.OnNext(new ReplProcessOutput(output + _startupScript));
 
                                     _stateStream.OnNext(Core.State.Executing);
                                     _replProcess.WriteLine(_startupScript);

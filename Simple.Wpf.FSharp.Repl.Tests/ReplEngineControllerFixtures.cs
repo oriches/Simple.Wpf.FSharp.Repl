@@ -133,7 +133,7 @@
         public void repl_engine_executes_when_view_model_execute_is_called()
         {
             // ARRANGE
-            var script = @"let x = 123;;" + Environment.NewLine;
+            var script = @"let x = 123;;";
             _replEngine.Setup(x => x.Execute(script)).Returns(_replEngine.Object).Verifiable();
             var controller = new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler, _testScheduler);
             var viewModel = (ReplEngineViewModel)controller.ViewModel;

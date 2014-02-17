@@ -190,15 +190,9 @@
 
         private void ExecuteImpl(string line)
         {
-            var preparedLine = line;
-            if (!line.EndsWith(Environment.NewLine))
-            {
-                preparedLine += Environment.NewLine;
-            }
+            _output.Add(new ReplLineViewModel(Prompt + line));
 
-            _output.Add(new ReplLineViewModel(Prompt + preparedLine));
-
-            _execute.OnNext(preparedLine);
+            _execute.OnNext(line);
         }
 
         private void UpdateState(State state)
