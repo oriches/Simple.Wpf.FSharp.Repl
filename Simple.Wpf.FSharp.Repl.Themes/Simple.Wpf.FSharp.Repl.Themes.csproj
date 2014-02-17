@@ -85,10 +85,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\TerminalThemesLoader.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
+    <Compile Include="..\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Helpers\TerminalThemesLoader.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
