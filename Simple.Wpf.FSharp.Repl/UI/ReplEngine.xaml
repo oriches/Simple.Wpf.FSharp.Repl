@@ -11,6 +11,18 @@
              d:DesignWidth="600"
              d:DataContext="{d:DesignInstance vm:ReplEngineViewModel}">
 
+    <UserControl.Resources>
+
+        <ResourceDictionary>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="DefaultTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
+        
+    </UserControl.Resources>
+    
     <Grid Margin="5"
           Style="{DynamicResource ReplGridStyle}">
 
@@ -78,8 +90,7 @@
                         IsReadOnly="{Binding Path=IsReadOnly, Mode=OneWay}"
                         Prompt="{Binding Path=Prompt, Mode=OneWay}"
                         ItemsSource="{Binding Path=Output, Mode=OneWay}"
-                        ItemDisplayPath="Value"
-                        ItemIsErrorPath="IsError">
+                        ItemDisplayPath="Value">
 
                 <t:Terminal.InputBindings>
                     <KeyBinding Command="{Binding Path=ClearCommand, Mode=OneWay}"

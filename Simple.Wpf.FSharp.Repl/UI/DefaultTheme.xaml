@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:terminal="clr-namespace:Simple.Wpf.Terminal;assembly=Simple.Wpf.Terminal">
+                    xmlns:terminal="clr-namespace:Simple.Wpf.Terminal;assembly=Simple.Wpf.Terminal"
+                    xmlns:ui="clr-namespace:Simple.Wpf.FSharp.Repl.UI">
 
     <Style x:Key="ReplGridStyle"
            TargetType="{x:Type Grid}"
@@ -27,9 +28,15 @@
            BasedOn="{x:Null}">
     </Style>
 
+    <ui:LineColorConverter x:Key="LineColorConverter"
+                           Normal="Black"
+                           Error="Red" />
+
     <Style x:Key="ReplTerminalStyle"
            TargetType="{x:Type terminal:Terminal}"
            BasedOn="{x:Null}">
+        <Setter Property="LineColorConverter"
+                Value="{StaticResource LineColorConverter}" />
     </Style>
 
 </ResourceDictionary>

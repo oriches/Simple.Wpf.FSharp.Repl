@@ -1,15 +1,23 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:terminal="clr-namespace:Simple.Wpf.Terminal;assembly=Simple.Wpf.Terminal">
+                    xmlns:terminal="clr-namespace:Simple.Wpf.Terminal;assembly=Simple.Wpf.Terminal"
+                    xmlns:ui="clr-namespace:Simple.Wpf.FSharp.Repl.UI;assembly=Simple.Wpf.FSharp.Repl">
     
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/Simple.Wpf.Terminal.Themes;component/BlueTheme.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
+    <ui:LineColorConverter x:Key="LineColorConverter"
+                           Normal="Yellow"
+                           Error="DarkOrange" />
+
     <Style x:Key="ReplTerminalStyle"
            TargetType="{x:Type terminal:Terminal}"
-           BasedOn="{StaticResource TerminalStyle}" />
-
+           BasedOn="{StaticResource TerminalStyle}">
+        <Setter Property="LineColorConverter"
+                Value="{StaticResource LineColorConverter}" />
+    </Style>
+        
     <Style x:Key="ReplGridStyle"
            TargetType="{x:Type Grid}"
            BasedOn="{x:Null}">
