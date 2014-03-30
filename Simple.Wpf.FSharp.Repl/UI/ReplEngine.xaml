@@ -11,18 +11,6 @@
              d:DesignWidth="600"
              d:DataContext="{d:DesignInstance vm:ReplEngineViewModel}">
 
-    <UserControl.Resources>
-
-        <ResourceDictionary>
-
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="DefaultTheme.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-
-        </ResourceDictionary>
-        
-    </UserControl.Resources>
-    
     <Grid Margin="5"
           Style="{DynamicResource ReplGridStyle}">
 
