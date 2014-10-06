@@ -73,8 +73,13 @@
                 return _normalBrush;
             }
 
-            var line = (ReplLineViewModel) value;
-            return line.IsError ? _errorBrush : _normalBrush;
+            if (value is ReplLineViewModel)
+            {
+                var line = (ReplLineViewModel)value;
+                return line.IsError ? _errorBrush : _normalBrush;
+            }
+            
+            return _normalBrush;
         }
 
         /// <summary>
