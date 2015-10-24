@@ -2,7 +2,7 @@
 {
     using NUnit.Framework;
 
-    [TestFixture]
+    [TestFixture, Ignore]
     public class ReplEngineFixtures
     {
     }
