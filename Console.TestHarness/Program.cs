@@ -1,35 +1,31 @@
-﻿namespace Console.TestHarness
-{
-    using System;
-    using System.Diagnostics;
-    using Simple.Wpf.FSharp.Repl;
-    using Simple.Wpf.FSharp.Repl.Core;
+﻿using System;
+using System.Diagnostics;
+using Simple.Wpf.FSharp.Repl.Core;
 
-    class Program
+namespace Console.TestHarness
+{
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             using (var engine = new ReplEngine())
             {
-                engine.State.Subscribe(x => Debug.WriteLine("state = " + x.ToString()));
-                engine.Output.Subscribe(Console.Write);
+                engine.State.Subscribe(x => Debug.WriteLine("state = " + x));
+                engine.Output.Subscribe(System.Console.Write);
                 engine.Start("let answer = 42.00;;");
 
                 while (true)
                 {
-                    var line = Console.ReadLine();
+                    var line = System.Console.ReadLine();
 
-                    if (line == "q!")
-                    {
-                        break;
-                    }
+                    if (line == "q!") break;
 
                     engine.Execute(line);
                 }
             }
 
-            Console.WriteLine("Press ENTER to close...");
-            Console.ReadLine();
+            System.Console.WriteLine("Press ENTER to close...");
+            System.Console.ReadLine();
         }
     }
 }

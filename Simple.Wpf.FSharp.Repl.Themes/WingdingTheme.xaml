@@ -69,8 +69,8 @@
     </Style>
 
     <ui:LineColorConverter x:Key="LineColorConverter"
-                             Normal="Black"
-                             Error="DarkOrange" />
+                           Normal="Black"
+                           Error="DarkOrange" />
 
     <Style x:Key="ReplTerminalStyle"
            TargetType="{x:Type terminal:Terminal}"

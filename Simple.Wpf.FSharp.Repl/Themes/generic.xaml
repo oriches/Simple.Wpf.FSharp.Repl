@@ -4,32 +4,26 @@
 
     <Style x:Key="ReplGridStyle"
            TargetType="{x:Type Grid}"
-           BasedOn="{x:Null}">
-    </Style> 
+           BasedOn="{x:Null}" />
 
     <Style x:Key="ReplButtonsStackPanelStyle"
            TargetType="{x:Type StackPanel}"
-           BasedOn="{x:Null}">
-    </Style>
+           BasedOn="{x:Null}" />
 
     <Style x:Key="ReplButtonStyle"
            TargetType="{x:Type Button}"
-           BasedOn="{x:Null}">
-    </Style>
+           BasedOn="{x:Null}" />
 
     <Style x:Key="ReplTextBlockStyle"
            TargetType="{x:Type TextBlock}"
-           BasedOn="{x:Null}">
-    </Style>
+           BasedOn="{x:Null}" />
 
     <Style x:Key="ReplBorderStyle"
            TargetType="{x:Type Border}"
-           BasedOn="{x:Null}">
-    </Style>
+           BasedOn="{x:Null}" />
 
     <Style x:Key="ReplTerminalStyle"
            TargetType="{x:Type terminal:Terminal}"
-           BasedOn="{x:Null}">
-    </Style>
+           BasedOn="{x:Null}" />
 
 </ResourceDictionary>

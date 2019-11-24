@@ -38,12 +38,12 @@
                    Text="Working folder:" />
 
         <TextBlock x:Name="WorkingFolderTextBox"
-                 Grid.Row="1"
-                 Grid.Column="1"
-                 Margin="5"
-                 FontStyle="Italic"
-                 HorizontalAlignment="Stretch"
-                 Text="{Binding Path=Content.WorkingDirectory, Mode=OneWay}" />
+                   Grid.Row="1"
+                   Grid.Column="1"
+                   Margin="5"
+                   FontStyle="Italic"
+                   HorizontalAlignment="Stretch"
+                   Text="{Binding Path=Content.WorkingDirectory, Mode=OneWay}" />
 
         <ui:ReplEngine x:Name="ReplEngine"
                        Grid.Row="2"

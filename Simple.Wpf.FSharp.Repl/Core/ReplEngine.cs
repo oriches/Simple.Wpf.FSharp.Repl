@@ -1,31 +1,31 @@
-﻿namespace Simple.Wpf.FSharp.Repl.Core
-{
-    using System;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Reactive;
-    using System.Reactive.Concurrency;
-    using System.Reactive.Disposables;
-    using System.Reactive.Linq;
-    using System.Reactive.Subjects;
-    using System.Reflection;
-    using System.Threading;
-    using ICSharpCode.SharpZipLib.Zip;
-    using Properties;
-    using Services;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Reflection;
+using System.Threading;
+using ICSharpCode.SharpZipLib.Zip;
+using Simple.Wpf.FSharp.Repl.Properties;
+using Simple.Wpf.FSharp.Repl.Services;
 
+namespace Simple.Wpf.FSharp.Repl.Core
+{
     /// <summary>
-    /// Wrapper around the F# Interactive process.
+    ///     Wrapper around the F# Interactive process.
     /// </summary>
     public sealed class ReplEngine : IReplEngine, IDisposable
     {
         /// <summary>
-        /// REPL engine quit line for the F# Interactive process.
+        ///     REPL engine quit line for the F# Interactive process.
         /// </summary>
         public const string QuitLine = "#quit;;";
 
         /// <summary>
-        /// REPL engine line termination characters.
+        ///     REPL engine line termination characters.
         /// </summary>
         public const string LineTermination = ";;";
 
@@ -38,86 +38,27 @@
         private const string ZipFilename = @"fsharp.zip";
 
         private const string WorkingDirectoryOutput = "Working folder = \"{0}\"";
-
-        private readonly string _workingDirectory;
+        private readonly bool _anyCpu;
+        private readonly CompositeDisposable _disposable;
+        private readonly Subject<ReplProcessOutput> _outputStream;
 
         private readonly IProcessService _processService;
         private readonly IScheduler _scheduler;
-        private readonly bool _anyCpu;
-        private readonly Subject<ReplProcessOutput> _outputStream;
         private readonly BehaviorSubject<State> _stateStream;
-        private readonly CompositeDisposable _disposable;
 
-        private string _startupScript;
         private ReplProcess _replProcess;
 
-        internal sealed class ReplProcess : IDisposable
-        {
-            private readonly IProcess _process;
-            private readonly IDisposable _disposable;
-            private bool _disposed;
-
-            public ReplProcess(IProcess process, IDisposable disposable)
-            {
-                _process = process;
-                _disposable = disposable;
-            }
-
-             // Use C# destructor syntax for finalization code.
-            ~ReplProcess()
-            {
-                DisposeImpl(false);
-            }
-
-            public void Dispose()
-            {
-                DisposeImpl(true);
-                GC.SuppressFinalize(this);
-            }
-
-            private void DisposeImpl(bool disposing)
-            {
-                if (!_disposed)
-                {
-                    if (disposing)
-                    {
-                        _process.WriteStandardInput(QuitLine);
-                        _process.WaitForExit();
-                        _process.Dispose();
-                    }
-
-                    _disposable.Dispose();
-                    _disposed = true;
-                }
-            }
-
-            public void WriteLine(string script)
-            {
-                _process.WriteStandardInput(script);
-            }
-        }
-
-        internal sealed class ReplProcessOutput
-        {
-            public string Output { get; private set; }
-
-            public bool IsError { get; private set; }
-
-            public ReplProcessOutput(string output, bool isError = false)
-            {
-                Output = output;
-                IsError = isError;
-            }
-        }
+        private string _startupScript;
 
         /// <summary>
-        /// Creates an instance of the REPL engine with the specified parameters.
+        ///     Creates an instance of the REPL engine with the specified parameters.
         /// </summary>
         /// <param name="workingDirectory">The working directory for the F# Interactive process.</param>
         /// <param name="processService">Handles creating windows processes.</param>
         /// <param name="scheduler">The Reactive scheduler for the REPL engine, defaults to the task pool scheduler.</param>
         /// <param name="anyCpu">Flag indicating whether to run as 32bit (false) or to determine at runtime (true).</param>
-        public ReplEngine(string workingDirectory = null, IProcessService processService = null, IScheduler scheduler = null, bool anyCpu = true)
+        public ReplEngine(string workingDirectory = null, IProcessService processService = null,
+            IScheduler scheduler = null, bool anyCpu = true)
         {
             _scheduler = scheduler;
             _anyCpu = anyCpu;
@@ -126,17 +67,14 @@
 
             if (!string.IsNullOrWhiteSpace(workingDirectory))
             {
-                _workingDirectory = workingDirectory.Trim();
-                var directoryInfo = new DirectoryInfo(_workingDirectory);
+                WorkingDirectory = workingDirectory.Trim();
+                var directoryInfo = new DirectoryInfo(WorkingDirectory);
 
-                if (!directoryInfo.Exists)
-                {
-                    directoryInfo.Create();
-                }
+                if (!directoryInfo.Exists) directoryInfo.Create();
             }
             else
             {
-                _workingDirectory = Path.GetTempPath();
+                WorkingDirectory = Path.GetTempPath();
             }
 
             _stateStream = new BehaviorSubject<State>(Core.State.Unknown);
@@ -145,42 +83,55 @@
             _disposable = new CompositeDisposable
             {
                 _stateStream,
-                _outputStream,
+                _outputStream
             };
         }
 
         /// <summary>
-        /// REPL engine output as a Reactive extensions stream.
+        ///     Disposes the REPL engine, if it's been started then it will be stopped.
         /// </summary>
-        public IObservable<string> Output { get { return _outputStream.Where(x => !x.IsError).Select(x => x.Output); } }
+        public void Dispose()
+        {
+            Stop();
+
+            _disposable.Dispose();
+        }
 
         /// <summary>
-        /// REPL engine errors as a Reactive extensions stream.
+        ///     REPL engine output as a Reactive extensions stream.
         /// </summary>
-        public IObservable<string> Error { get { return _outputStream.Where(x => x.IsError).Select(x => x.Output); } }
+        public IObservable<string> Output
+        {
+            get { return _outputStream.Where(x => !x.IsError).Select(x => x.Output); }
+        }
 
         /// <summary>
-        /// REPL engine state changes as a Reactive extensions stream.
+        ///     REPL engine errors as a Reactive extensions stream.
         /// </summary>
-        public IObservable<State> State { get { return _stateStream.DistinctUntilChanged(); } }
+        public IObservable<string> Error
+        {
+            get { return _outputStream.Where(x => x.IsError).Select(x => x.Output); }
+        }
 
         /// <summary>
-        /// REPL engine working directory as a Reactive extensions stream.
+        ///     REPL engine state changes as a Reactive extensions stream.
         /// </summary>
-        public string WorkingDirectory { get { return _workingDirectory; } }
+        public IObservable<State> State => _stateStream.DistinctUntilChanged();
 
         /// <summary>
-        /// Starts the REPL engine.
+        ///     REPL engine working directory as a Reactive extensions stream.
+        /// </summary>
+        public string WorkingDirectory { get; }
+
+        /// <summary>
+        ///     Starts the REPL engine.
         /// </summary>
         /// <param name="script">The script to run at startup.</param>
         /// <returns>Returns the REPL engine.</returns>
         public IReplEngine Start(string script = null)
         {
             var state = _stateStream.First();
-            if (state != Core.State.Stopped && state != Core.State.Unknown && state != Core.State.Faulted)
-            {
-                return this;
-            }
+            if (state != Core.State.Stopped && state != Core.State.Unknown && state != Core.State.Faulted) return this;
 
             _stateStream.OnNext(Core.State.Starting);
 
@@ -191,16 +142,13 @@
         }
 
         /// <summary>
-        /// Stops the REPL engine.
+        ///     Stops the REPL engine.
         /// </summary>
         /// <returns>Returns the REPL engine.</returns>
         public IReplEngine Stop()
         {
             var state = _stateStream.First();
-            if (state == Core.State.Stopping || state == Core.State.Stopped)
-            {
-                return this;
-            }
+            if (state == Core.State.Stopping || state == Core.State.Stopped) return this;
 
             _stateStream.OnNext(Core.State.Stopping);
 
@@ -210,21 +158,18 @@
             _startupScript = null;
 
             _stateStream.OnNext(Core.State.Stopped);
-            
+
             return this;
         }
 
         /// <summary>
-        /// Reset the REPL engine, if it has already been started.
+        ///     Reset the REPL engine, if it has already been started.
         /// </summary>
         /// <returns>Returns the REPL engine.</returns>
         public IReplEngine Reset()
         {
             var state = _stateStream.First();
-            if (state == Core.State.Stopping || state == Core.State.Stopped)
-            {
-                return this;
-            }
+            if (state == Core.State.Stopping || state == Core.State.Stopped) return this;
 
             _stateStream.OnNext(Core.State.Stopping);
 
@@ -239,53 +184,37 @@
         }
 
         /// <summary>
-        /// Executes a scripts, if the REPL engine has been started.
+        ///     Executes a scripts, if the REPL engine has been started.
         /// </summary>
         /// <param name="script">The script to be executed.</param>
         /// <returns>Returns the REPL engine.</returns>
         public IReplEngine Execute(string script)
         {
             var state = _stateStream.First();
-            if (state != Core.State.Running && state != Core.State.Executing)
-            {
-                return this;
-            }
+            if (state != Core.State.Running && state != Core.State.Executing) return this;
 
-            if (script.EndsWith(LineTermination))
-            {
-                _stateStream.OnNext(Core.State.Executing);
-            }
+            if (script.EndsWith(LineTermination)) _stateStream.OnNext(Core.State.Executing);
 
             _replProcess.WriteLine(script);
 
             return this;
         }
 
-        /// <summary>
-        /// Disposes the REPL engine, if it's been started then it will be stopped.
-        /// </summary>
-        public void Dispose()
-        {
-            Stop();
-
-            _disposable.Dispose();
-        }
-
         private ReplProcess StartProcess()
         {
-            var process = CreateProcess(); 
+            var process = CreateProcess();
             var tokenSource = new CancellationTokenSource();
 
             var disposable = Observable.Create<Unit>(o =>
-            {
-                process.Start();
+                {
+                    process.Start();
 
-                o.OnNext(Unit.Default);
-                return Disposable.Empty;
-            })
-            .Select(_ => ObserveStandardErrors(process, tokenSource.Token))
-            .Select(_ => ObserveStandardOutput(process, tokenSource.Token))
-            .Subscribe(_ => { }, e => _stateStream.OnNext(Core.State.Faulted));
+                    o.OnNext(Unit.Default);
+                    return Disposable.Empty;
+                })
+                .Select(_ => ObserveStandardErrors(process, tokenSource.Token))
+                .Select(_ => ObserveStandardOutput(process, tokenSource.Token))
+                .Subscribe(_ => { }, e => _stateStream.OnNext(Core.State.Faulted));
 
             return new ReplProcess(process, Disposable.Create(() =>
             {
@@ -300,7 +229,7 @@
         {
             return Observable.Start(() =>
             {
-                _outputStream.OnNext(new ReplProcessOutput(string.Format(WorkingDirectoryOutput, _workingDirectory)));
+                _outputStream.OnNext(new ReplProcessOutput(string.Format(WorkingDirectoryOutput, WorkingDirectory)));
 
                 while (!cancellationToken.IsCancellationRequested)
                 {
@@ -317,7 +246,8 @@
 
                             if (output == AwaitingInput)
                             {
-                                if (_stateStream.First() == Core.State.Starting && !string.IsNullOrEmpty(_startupScript))
+                                if (_stateStream.First() == Core.State.Starting &&
+                                    !string.IsNullOrEmpty(_startupScript))
                                 {
                                     _outputStream.OnNext(new ReplProcessOutput(output + _startupScript));
 
@@ -386,31 +316,18 @@
                 var binaryDirectory = Path.Combine(baseDirectory, FSharpDirectory);
 
                 if (Directory.Exists(binaryDirectory))
-                {
                     if (DoesVersionFileExist(binaryDirectory))
-                    {
                         return;
-                    }
-                }
 
                 var di = new DirectoryInfo(baseDirectory);
-                if (!di.Exists)
-                {
-                    di.Create();
-                }
+                if (!di.Exists) di.Create();
 
                 di = new DirectoryInfo(binaryDirectory);
                 if (!di.Exists)
-                {
                     di.Create();
-                }
                 else
-                {
                     foreach (var file in di.EnumerateFiles())
-                    {
                         file.Delete();
-                    }
-                }
 
                 var zipFilePath = Path.Combine(binaryDirectory, ZipFilename);
                 using (var stream = File.Create(zipFilePath))
@@ -465,12 +382,71 @@
         private IProcess CreateProcess()
         {
             var executablePath = GetExecutablePath();
-            var process = _processService.StartReplExecutable(_workingDirectory, executablePath);
+            var process = _processService.StartReplExecutable(WorkingDirectory, executablePath);
 
-            Debug.WriteLine("Working directory - " + _workingDirectory);
+            Debug.WriteLine("Working directory - " + WorkingDirectory);
             Debug.WriteLine("File name - " + executablePath);
 
             return process;
+        }
+
+        internal sealed class ReplProcess : IDisposable
+        {
+            private readonly IDisposable _disposable;
+            private readonly IProcess _process;
+            private bool _disposed;
+
+            public ReplProcess(IProcess process, IDisposable disposable)
+            {
+                _process = process;
+                _disposable = disposable;
+            }
+
+            public void Dispose()
+            {
+                DisposeImpl(true);
+                GC.SuppressFinalize(this);
+            }
+
+            // Use C# destructor syntax for finalization code.
+            ~ReplProcess()
+            {
+                DisposeImpl(false);
+            }
+
+            private void DisposeImpl(bool disposing)
+            {
+                if (!_disposed)
+                {
+                    if (disposing)
+                    {
+                        _process.WriteStandardInput(QuitLine);
+                        _process.WaitForExit();
+                        _process.Dispose();
+                    }
+
+                    _disposable.Dispose();
+                    _disposed = true;
+                }
+            }
+
+            public void WriteLine(string script)
+            {
+                _process.WriteStandardInput(script);
+            }
+        }
+
+        internal sealed class ReplProcessOutput
+        {
+            public ReplProcessOutput(string output, bool isError = false)
+            {
+                Output = output;
+                IsError = isError;
+            }
+
+            public string Output { get; }
+
+            public bool IsError { get; }
         }
     }
 }

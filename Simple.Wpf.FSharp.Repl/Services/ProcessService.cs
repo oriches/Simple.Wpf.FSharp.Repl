@@ -1,12 +1,12 @@
 ﻿namespace Simple.Wpf.FSharp.Repl.Services
 {
     /// <summary>
-    /// Service starting .Net System.Diagnostics.Process instances for F# REPL engine &amp; Windows Explorer.
+    ///     Service starting .Net System.Diagnostics.Process instances for F# REPL engine &amp; Windows Explorer.
     /// </summary>
     public sealed class ProcessService : IProcessService
     {
         /// <summary>
-        /// Start an instance of Windows Explorer at the directory specified.
+        ///     Start an instance of Windows Explorer at the directory specified.
         /// </summary>
         /// <param name="directory">The directory to open.</param>
         /// <returns>The started process.</returns>
@@ -16,7 +16,7 @@
         }
 
         /// <summary>
-        /// Start the F# REPL process.
+        ///     Start the F# REPL process.
         /// </summary>
         /// <param name="workingDirectory">The working directory for the F# REPL process.</param>
         /// <param name="executableDirectory">The executable path for the F# REPL process.</param>

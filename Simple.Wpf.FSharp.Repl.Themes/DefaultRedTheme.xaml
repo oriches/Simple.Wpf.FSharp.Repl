@@ -19,7 +19,7 @@
         <Setter Property="Background"
                 Value="Black" />
         <Setter Property="Foreground"
-                Value="Red"/>
+                Value="Red" />
         <Setter Property="LineColorConverter"
                 Value="{StaticResource LineColorConverter}" />
         <Setter Property="ItemsMargin"

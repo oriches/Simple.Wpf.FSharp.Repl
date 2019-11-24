@@ -9,7 +9,7 @@
 
     <ui:LineColorConverter x:Key="LineColorConverter"
                            Normal="DeepSkyBlue"
-                           Error="Red"/>
+                           Error="Red" />
 
     <Style x:Key="ReplTerminalStyle"
            TargetType="{x:Type terminal:Terminal}"

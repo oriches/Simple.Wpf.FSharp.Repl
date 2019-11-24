@@ -40,8 +40,7 @@
                     Style="{DynamicResource ReplButtonStyle}"
                     FocusManager.IsFocusScope="false"
                     FocusManager.FocusedElement="{Binding ElementName=TerminalOutput}"
-                    Command="{Binding Path=ClearCommand, Mode=OneWay}">
-            </Button>
+                    Command="{Binding Path=ClearCommand, Mode=OneWay}" />
 
             <Button x:Name="ResetButton"
                     Height="20"
@@ -50,8 +49,7 @@
                     Style="{DynamicResource ReplButtonStyle}"
                     FocusManager.IsFocusScope="false"
                     FocusManager.FocusedElement="{Binding ElementName=TerminalOutput}"
-                    Command="{Binding Path=ResetCommand, Mode=OneWay}">
-            </Button>
+                    Command="{Binding Path=ResetCommand, Mode=OneWay}" />
 
         </StackPanel>
 

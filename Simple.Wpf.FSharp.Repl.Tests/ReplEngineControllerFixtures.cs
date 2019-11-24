@@ -1,27 +1,20 @@
-﻿namespace Simple.Wpf.FSharp.Repl.Tests
-{
-    using System;
-    using System.Linq;
-    using System.Reactive.Subjects;
-    using Core;
-    using Extensions;
-    using Microsoft.Reactive.Testing;
-    using Moq;
-    using NUnit.Framework;
-    using Services;
-    using UI.Controllers;
-    using UI.ViewModels;
+﻿using System;
+using System.Linq;
+using System.Reactive.Subjects;
+using Microsoft.Reactive.Testing;
+using Moq;
+using NUnit.Framework;
+using Simple.Wpf.FSharp.Repl.Core;
+using Simple.Wpf.FSharp.Repl.Services;
+using Simple.Wpf.FSharp.Repl.Tests.Extensions;
+using Simple.Wpf.FSharp.Repl.UI.Controllers;
+using Simple.Wpf.FSharp.Repl.UI.ViewModels;
 
+namespace Simple.Wpf.FSharp.Repl.Tests
+{
     [TestFixture]
     public class ReplEngineControllerFixtures
     {
-        private Mock<IProcessService> _processService;
-        private Mock<IReplEngine> _replEngine;
-        private TestScheduler _testScheduler;
-        private Subject<string> _errorSubject;
-        private Subject<string> _outputSubject;
-        private Subject<State> _stateSubject;
-
         [SetUp]
         public void Setup()
         {
@@ -44,72 +37,12 @@
             _replEngine.Setup(x => x.Start(startupScript)).Returns(_replEngine.Object);
         }
 
-        [Test]
-        public void repl_engine_is_started_when_view_model_is_accessed()
-        {
-            // ARRANGE
-            var controller = new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler);
-
-            // ACT
-            var viewModel = controller.ViewModel;
-
-            // ASSERT
-            Assert.That(viewModel, Is.Not.Null);
-            _replEngine.Verify(x => x.Start(It.IsAny<string>()), Times.Once());
-        }
-
-        [Test]
-        public void repl_engine_is_only_started_once()
-        {
-            // ARRANGE
-            var controller = new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler);
-
-            // ACT
-            var viewModel1 = controller.ViewModel;
-            var viewModel2 = controller.ViewModel;
-
-            // ASSERT
-            Assert.That(viewModel1, Is.Not.Null);
-            Assert.That(viewModel2, Is.Not.Null);
-            _replEngine.Verify(x => x.Start(It.IsAny<string>()), Times.Once());
-        }
-
-
-        [Test]
-        public void repl_engine_generates_output_then_view_model_is_updated()
-        {
-            // ARRANGE
-            var controller = new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler);
-            var viewModel = (ReplEngineViewModel)controller.ViewModel;
-
-            // ACT
-            _outputSubject.OnNext("line 1");
-
-            _testScheduler.AdvanceBy(TimeSpan.FromSeconds(1));
-
-            // ASSERT
-            Assert.That(viewModel.Output.Count(), Is.EqualTo(1));
-            Assert.That(viewModel.Output.First().Value, Is.EqualTo("line 1"));
-            Assert.That(viewModel.Output.First().IsError, Is.False);
-        }
-
-        [Test]
-        public void repl_engine_generates_error_output_then_view_model_is_updated()
-        {
-            // ARRANGE
-            var controller = new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler);
-            var viewModel = (ReplEngineViewModel)controller.ViewModel;
-
-            // ACT
-            _errorSubject.OnNext("error 1");
-
-            _testScheduler.AdvanceBy(TimeSpan.FromSeconds(1));
-
-            // ASSERT
-            Assert.That(viewModel.Output.Count(), Is.EqualTo(1));
-            Assert.That(viewModel.Output.First().Value, Is.EqualTo("error 1"));
-            Assert.That(viewModel.Output.First().IsError, Is.True);
-        }
+        private Mock<IProcessService> _processService;
+        private Mock<IReplEngine> _replEngine;
+        private TestScheduler _testScheduler;
+        private Subject<string> _errorSubject;
+        private Subject<string> _outputSubject;
+        private Subject<State> _stateSubject;
 
         [Test]
         public void repl_engine_executes_script_when_controller_execute_is_called()
@@ -117,8 +50,9 @@
             // ARRANGE
             var script = "let x = 345;;";
             _replEngine.Setup(x => x.Execute(script)).Returns(_replEngine.Object).Verifiable();
-            var controller = new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler);
-            var viewModel = (ReplEngineViewModel)controller.ViewModel;
+            var controller =
+                new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler);
+            var viewModel = (ReplEngineViewModel) controller.ViewModel;
 
             // ACT
             controller.Execute(script);
@@ -135,8 +69,9 @@
             // ARRANGE
             var script = @"let x = 123;;";
             _replEngine.Setup(x => x.Execute(script)).Returns(_replEngine.Object).Verifiable();
-            var controller = new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler, _testScheduler);
-            var viewModel = (ReplEngineViewModel)controller.ViewModel;
+            var controller = new ReplEngineController(null, null, _replEngine.Object, _processService.Object,
+                _testScheduler, _testScheduler);
+            var viewModel = (ReplEngineViewModel) controller.ViewModel;
             _stateSubject.OnNext(State.Running);
 
             _testScheduler.AdvanceBy(TimeSpan.FromSeconds(1));
@@ -151,12 +86,84 @@
         }
 
         [Test]
+        public void repl_engine_generates_error_output_then_view_model_is_updated()
+        {
+            // ARRANGE
+            var controller =
+                new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler);
+            var viewModel = (ReplEngineViewModel) controller.ViewModel;
+
+            // ACT
+            _errorSubject.OnNext("error 1");
+
+            _testScheduler.AdvanceBy(TimeSpan.FromSeconds(1));
+
+            // ASSERT
+            Assert.That(viewModel.Output.Count(), Is.EqualTo(1));
+            Assert.That(viewModel.Output.First().Value, Is.EqualTo("error 1"));
+            Assert.That(viewModel.Output.First().IsError, Is.True);
+        }
+
+
+        [Test]
+        public void repl_engine_generates_output_then_view_model_is_updated()
+        {
+            // ARRANGE
+            var controller =
+                new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler);
+            var viewModel = (ReplEngineViewModel) controller.ViewModel;
+
+            // ACT
+            _outputSubject.OnNext("line 1");
+
+            _testScheduler.AdvanceBy(TimeSpan.FromSeconds(1));
+
+            // ASSERT
+            Assert.That(viewModel.Output.Count(), Is.EqualTo(1));
+            Assert.That(viewModel.Output.First().Value, Is.EqualTo("line 1"));
+            Assert.That(viewModel.Output.First().IsError, Is.False);
+        }
+
+        [Test]
+        public void repl_engine_is_only_started_once()
+        {
+            // ARRANGE
+            var controller =
+                new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler);
+
+            // ACT
+            var viewModel1 = controller.ViewModel;
+            var viewModel2 = controller.ViewModel;
+
+            // ASSERT
+            Assert.That(viewModel1, Is.Not.Null);
+            Assert.That(viewModel2, Is.Not.Null);
+            _replEngine.Verify(x => x.Start(It.IsAny<string>()), Times.Once());
+        }
+
+        [Test]
+        public void repl_engine_is_started_when_view_model_is_accessed()
+        {
+            // ARRANGE
+            var controller =
+                new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler);
+
+            // ACT
+            var viewModel = controller.ViewModel;
+
+            // ASSERT
+            Assert.That(viewModel, Is.Not.Null);
+            _replEngine.Verify(x => x.Start(It.IsAny<string>()), Times.Once());
+        }
+
+        [Test]
         public void repl_engine_resets_when_view_model_reset_is_called()
         {
             // ARRANGE
             _replEngine.Setup(x => x.Reset()).Returns(_replEngine.Object).Verifiable();
-            var controller = new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler, _testScheduler);
-            var viewModel = (ReplEngineViewModel)controller.ViewModel;
+            var controller = new ReplEngineController(null, null, _replEngine.Object, _processService.Object,
+                _testScheduler, _testScheduler);
+            var viewModel = (ReplEngineViewModel) controller.ViewModel;
             _stateSubject.OnNext(State.Running);
 
             _testScheduler.AdvanceBy(TimeSpan.FromSeconds(1));

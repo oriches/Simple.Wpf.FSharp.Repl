@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:terminal="clr-namespace:Simple.Wpf.Terminal;assembly=Simple.Wpf.Terminal"
                     xmlns:ui="clr-namespace:Simple.Wpf.FSharp.Repl.UI;assembly=Simple.Wpf.FSharp.Repl">
-    
+
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/Simple.Wpf.Terminal.Themes;component/BlueTheme.xaml" />
     </ResourceDictionary.MergedDictionaries>
@@ -17,7 +17,7 @@
         <Setter Property="LineColorConverter"
                 Value="{StaticResource LineColorConverter}" />
     </Style>
-        
+
     <Style x:Key="ReplGridStyle"
            TargetType="{x:Type Grid}"
            BasedOn="{x:Null}">

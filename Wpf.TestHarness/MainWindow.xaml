@@ -41,12 +41,12 @@
                    Margin="5"
                    FontStyle="Italic"
                    HorizontalAlignment="Stretch"
-                   Text="{Binding ElementName=ReplWindow, Path=WorkingDirectory, Mode=OneWay}"/>
+                   Text="{Binding ElementName=ReplWindow, Path=WorkingDirectory, Mode=OneWay}" />
 
         <ui:ReplWindow x:Name="ReplWindow"
                        Grid.Row="2"
                        Grid.Column="0"
-                       Grid.ColumnSpan="2"/>
+                       Grid.ColumnSpan="2" />
 
     </Grid>
 </Window>

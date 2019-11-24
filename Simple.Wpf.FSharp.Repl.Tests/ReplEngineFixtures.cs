@@ -1,8 +1,9 @@
-﻿namespace Simple.Wpf.FSharp.Repl.Tests
-{
-    using NUnit.Framework;
+﻿using NUnit.Framework;
 
-    [TestFixture, Ignore]
+namespace Simple.Wpf.FSharp.Repl.Tests
+{
+    [TestFixture]
+    [Ignore("Placeholder")]
     public class ReplEngineFixtures
     {
     }

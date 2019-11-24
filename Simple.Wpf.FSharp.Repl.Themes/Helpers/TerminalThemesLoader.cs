@@ -1,7 +1,7 @@
-﻿namespace Simple.Wpf.FSharp.Repl.Themes.Helpers
-{
-    using Terminal.Themes;
+﻿using Simple.Wpf.Terminal.Themes;
 
+namespace Simple.Wpf.FSharp.Repl.Themes.Helpers
+{
     [IncludeThemesAssembly]
     internal class TerminalThemesLoader
     {

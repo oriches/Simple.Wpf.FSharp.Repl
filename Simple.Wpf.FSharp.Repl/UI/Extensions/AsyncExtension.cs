@@ -1,9 +1,9 @@
-﻿namespace Simple.Wpf.FSharp.Repl.UI.Extensions
-{
-    using System.IO;
-    using System.Threading;
-    using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
+namespace Simple.Wpf.FSharp.Repl.UI.Extensions
+{
     internal static class AsyncExtension
     {
         public static Task<string> ReadLineAsync(this StreamReader streamReader, CancellationToken token)

@@ -1,16 +1,16 @@
-﻿namespace Wpf.Mvvm.TestHarness
-{
-    using System;
-    using System.Windows;
+﻿using System;
+using System.Windows;
 
+namespace Wpf.Mvvm.TestHarness
+{
     public partial class App : Application
     {
-        private MainViewModel _mainViewModel;
+        private readonly MainViewModel _mainViewModel;
 
         public App()
         {
             _mainViewModel = new MainViewModel();
-            var mainWindow = new MainWindow { DataContext = _mainViewModel };
+            var mainWindow = new MainWindow {DataContext = _mainViewModel};
 
             Current.MainWindow = mainWindow;
             mainWindow.Show();

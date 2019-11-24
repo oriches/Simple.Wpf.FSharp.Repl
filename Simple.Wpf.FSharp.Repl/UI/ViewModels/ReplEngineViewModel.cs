@@ -1,37 +1,35 @@
-﻿namespace Simple.Wpf.FSharp.Repl.UI.ViewModels
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Reactive;
-    using System.Reactive.Disposables;
-    using System.Reactive.Linq;
-    using System.Reactive.Subjects;
-    using System.Windows.Input;
-    using Commands;
-    using Core;
-    using Services;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Windows.Input;
+using Simple.Wpf.FSharp.Repl.Core;
+using Simple.Wpf.FSharp.Repl.Services;
+using Simple.Wpf.FSharp.Repl.UI.Commands;
 
+namespace Simple.Wpf.FSharp.Repl.UI.ViewModels
+{
     /// <summary>
-    /// ViewModel for the REPL engine.
+    ///     ViewModel for the REPL engine.
     /// </summary>
     public sealed class ReplEngineViewModel : BaseViewModel, IReplEngineViewModel, IDisposable
     {
         private const string PromptText = "> ";
-
-        private readonly string _workingDirectory;
-        private readonly IProcessService _processService;
         private readonly CompositeDisposable _disposable;
-        private readonly ObservableCollection<ReplLineViewModel> _output;
-        private readonly Subject<Unit> _reset;
         private readonly Subject<string> _execute;
-        
+        private readonly ObservableCollection<ReplLineViewModel> _output;
+        private readonly IProcessService _processService;
+        private readonly Subject<Unit> _reset;
+
         private State _state;
 
         /// <summary>
-        /// Creates an instance of the REPL engine ViewModel.
+        ///     Creates an instance of the REPL engine ViewModel.
         /// </summary>
         /// <param name="replState">Reactive extensions stream of the REPL engine state.</param>
         /// <param name="replOutput">Reactive extensions stream of the REPL engine output.</param>
@@ -44,7 +42,7 @@
             string workingDirectory,
             IProcessService processService)
         {
-            _workingDirectory = workingDirectory;
+            WorkingDirectory = workingDirectory;
             _processService = processService;
             _state = Core.State.Unknown;
             _output = new ObservableCollection<ReplLineViewModel>();
@@ -60,11 +58,11 @@
             _disposable = new CompositeDisposable
             {
                 Disposable.Create(() =>
-                                  {
-                                        ClearCommand = null;
-                                        ResetCommand = null;
-                                        ExecuteCommand = null;
-                                  }),
+                {
+                    ClearCommand = null;
+                    ResetCommand = null;
+                    ExecuteCommand = null;
+                }),
                 _reset,
                 _execute,
                 replState.Subscribe(UpdateState),
@@ -84,83 +82,72 @@
         }
 
         /// <summary>
-        /// The REPL engine prompt.
+        ///     The REPL engine prompt.
         /// </summary>
-        public string Prompt
-        {
-            get
-            {
-                return _state == Core.State.Running ? PromptText : string.Empty;
-            }
-        }
+        public string Prompt => _state == Core.State.Running ? PromptText : string.Empty;
 
         /// <summary>
-        /// The REPL engine state.
+        ///     The REPL engine state.
         /// </summary>
-        public string State
-        {
-            get
-            {
-                return _state == Core.State.Running
-                    || _state == Core.State.Stopped
-                    || _state == Core.State.Unknown
-                    ? string.Empty
-                    : string.Intern(_state.ToString());
-            }
-        }
+        public string State =>
+            _state == Core.State.Running
+            || _state == Core.State.Stopped
+            || _state == Core.State.Unknown
+                ? string.Empty
+                : string.Intern(_state.ToString());
 
         /// <summary>
-        /// The REPL engine working directory.
+        ///     The aggregated output from the REPL engine.
         /// </summary>
-        public string WorkingDirectory { get { return _workingDirectory; } }
+        public IEnumerable<ReplLineViewModel> Output => _output;
 
         /// <summary>
-        /// Reset requests as a Reactive extensions stream, this is consumed by the controller.
-        /// </summary>
-        public IObservable<Unit> Reset { get { return _reset; } }
-
-        /// <summary>
-        /// Execution requests as a Reactive extensions stream, this is consumed by the controller.
-        /// </summary>
-        public IObservable<string> Execute { get { return _execute; } }
-
-        /// <summary>
-        /// The aggregated output from the REPL engine.
-        /// </summary>
-        public IEnumerable<ReplLineViewModel> Output { get { return _output; } }
-
-        /// <summary>
-        /// Clear the output command.
+        ///     Clear the output command.
         /// </summary>
         public ICommand ClearCommand { get; private set; }
 
         /// <summary>
-        /// Reset the REPL engine commnad.
+        ///     Reset the REPL engine commnad.
         /// </summary>
         public ICommand ResetCommand { get; private set; }
 
         /// <summary>
-        /// Executes the REPL engine commnad.
+        ///     Executes the REPL engine commnad.
         /// </summary>
         public ICommand ExecuteCommand { get; private set; }
 
         /// <summary>
-        /// Opens the working folder.
+        ///     Opens the working folder.
         /// </summary>
-        public ICommand OpenWorkingFolderCommand { get; private set; }
+        public ICommand OpenWorkingFolderCommand { get; }
 
         /// <summary>
-        /// Is the REPL engine UI in read only mode.
+        ///     Is the REPL engine UI in read only mode.
         /// </summary>
-        public bool IsReadOnly { get { return _state == Core.State.Executing; } }
+        public bool IsReadOnly => _state == Core.State.Executing;
 
         /// <summary>
-        /// Disposes the ViewModel.
+        ///     Disposes the ViewModel.
         /// </summary>
         public void Dispose()
         {
             _disposable.Dispose();
         }
+
+        /// <summary>
+        ///     The REPL engine working directory.
+        /// </summary>
+        public string WorkingDirectory { get; }
+
+        /// <summary>
+        ///     Reset requests as a Reactive extensions stream, this is consumed by the controller.
+        /// </summary>
+        public IObservable<Unit> Reset => _reset;
+
+        /// <summary>
+        ///     Execution requests as a Reactive extensions stream, this is consumed by the controller.
+        /// </summary>
+        public IObservable<string> Execute => _execute;
 
         private bool CanClear()
         {
@@ -210,7 +197,7 @@
 
         private void OpenWorkingFolder()
         {
-            _processService.StartWindowsExplorer(_workingDirectory);
+            _processService.StartWindowsExplorer(WorkingDirectory);
         }
     }
 }

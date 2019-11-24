@@ -1,8 +1,8 @@
-﻿namespace Simple.Wpf.FSharp.Repl.Tests
+﻿using NUnit.Framework;
+using Simple.Wpf.FSharp.Repl.UI.ViewModels;
+
+namespace Simple.Wpf.FSharp.Repl.Tests
 {
-    using NUnit.Framework;
-    using UI.ViewModels;
-    
     [TestFixture]
     public class ReplLineViewModelFixtures
     {
@@ -11,7 +11,9 @@
         {
             // ARRANGE
             // ACT
-            var viewModel = new ReplLineViewModel("stdin(2,1): error FS0039: The value or constructor 'sssss' is not defined", true);
+            var viewModel =
+                new ReplLineViewModel("stdin(2,1): error FS0039: The value or constructor 'sssss' is not defined",
+                    true);
 
             // ASSERT
             Assert.That(viewModel.IsError, Is.True);
