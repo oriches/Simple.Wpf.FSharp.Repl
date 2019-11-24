@@ -35,20 +35,14 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Expression.Blend.Sdk.WPF.1.0.1\lib\net45\Microsoft.Expression.Interactions.dll</HintPath>
-    </Reference>
     <Reference Include="Simple.Wpf.Terminal, Version=1.35.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Simple.Wpf.Terminal.2.0.0\lib\net48\Simple.Wpf.Terminal.dll</HintPath>
+      <HintPath>..\packages\Simple.Wpf.Terminal.2.1.0\lib\net48\Simple.Wpf.Terminal.dll</HintPath>
     </Reference>
     <Reference Include="Simple.Wpf.Terminal.Themes, Version=1.35.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Simple.Wpf.Terminal.2.0.0\lib\net48\Simple.Wpf.Terminal.Themes.dll</HintPath>
+      <HintPath>..\packages\Simple.Wpf.Terminal.2.1.0\lib\net48\Simple.Wpf.Terminal.Themes.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Expression.Blend.Sdk.WPF.1.0.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
