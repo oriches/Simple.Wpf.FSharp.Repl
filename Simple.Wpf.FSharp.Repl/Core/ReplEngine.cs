@@ -130,7 +130,7 @@ namespace Simple.Wpf.FSharp.Repl.Core
         /// <returns>Returns the REPL engine.</returns>
         public IReplEngine Start(string script = null)
         {
-            var state = _stateStream.First();
+            var state = _stateStream.Value;
             if (state != Core.State.Stopped && state != Core.State.Unknown && state != Core.State.Faulted) return this;
 
             _stateStream.OnNext(Core.State.Starting);
@@ -147,7 +147,7 @@ namespace Simple.Wpf.FSharp.Repl.Core
         /// <returns>Returns the REPL engine.</returns>
         public IReplEngine Stop()
         {
-            var state = _stateStream.First();
+            var state = _stateStream.Value;
             if (state == Core.State.Stopping || state == Core.State.Stopped) return this;
 
             _stateStream.OnNext(Core.State.Stopping);
@@ -168,7 +168,7 @@ namespace Simple.Wpf.FSharp.Repl.Core
         /// <returns>Returns the REPL engine.</returns>
         public IReplEngine Reset()
         {
-            var state = _stateStream.First();
+            var state = _stateStream.Value;
             if (state == Core.State.Stopping || state == Core.State.Stopped) return this;
 
             _stateStream.OnNext(Core.State.Stopping);
@@ -190,7 +190,7 @@ namespace Simple.Wpf.FSharp.Repl.Core
         /// <returns>Returns the REPL engine.</returns>
         public IReplEngine Execute(string script)
         {
-            var state = _stateStream.First();
+            var state = _stateStream.Value;
             if (state != Core.State.Running && state != Core.State.Executing) return this;
 
             if (script.EndsWith(LineTermination)) _stateStream.OnNext(Core.State.Executing);
@@ -246,7 +246,7 @@ namespace Simple.Wpf.FSharp.Repl.Core
 
                             if (output == AwaitingInput)
                             {
-                                if (_stateStream.First() == Core.State.Starting &&
+                                if (_stateStream.Value == Core.State.Starting &&
                                     !string.IsNullOrEmpty(_startupScript))
                                 {
                                     _outputStream.OnNext(new ReplProcessOutput(output + _startupScript));
@@ -340,17 +340,18 @@ namespace Simple.Wpf.FSharp.Repl.Core
 
                 File.Delete(zipFilePath);
 
-                CreateVersionfile(binaryDirectory);
+                CreateVersionFile(binaryDirectory);
             }
             catch (Exception)
             {
+                // ignored
             }
         }
 
-        private static void CreateVersionfile(string binaryDirectory)
+        private static void CreateVersionFile(string binaryDirectory)
         {
             var versionNumber = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            var versionFile = string.Format("{0}.txt", versionNumber);
+            var versionFile = $"{versionNumber}.txt";
 
             var versionFilePath = Path.Combine(binaryDirectory, versionFile);
 
@@ -360,7 +361,7 @@ namespace Simple.Wpf.FSharp.Repl.Core
         private static bool DoesVersionFileExist(string binaryDirectory)
         {
             var versionNumber = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            var versionFile = string.Format("{0}.txt", versionNumber);
+            var versionFile = $"{versionNumber}.txt";
 
             var versionFilePath = Path.Combine(binaryDirectory, versionFile);
 

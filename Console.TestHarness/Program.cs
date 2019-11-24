@@ -24,7 +24,7 @@ namespace Console.TestHarness
                 }
             }
 
-            System.Console.WriteLine("Press ENTER to close...");
+            System.Console.WriteLine(@"Press ENTER to close...");
             System.Console.ReadLine();
         }
     }

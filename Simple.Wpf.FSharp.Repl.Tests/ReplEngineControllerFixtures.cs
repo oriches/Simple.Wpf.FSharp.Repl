@@ -31,10 +31,8 @@ namespace Simple.Wpf.FSharp.Repl.Tests
             _replEngine.Setup(x => x.Output).Returns(_outputSubject);
             _replEngine.Setup(x => x.State).Returns(_stateSubject);
 
-            string workingDirectory = null;
-            string startupScript = null;
-            _replEngine.Setup(x => x.WorkingDirectory).Returns(workingDirectory);
-            _replEngine.Setup(x => x.Start(startupScript)).Returns(_replEngine.Object);
+            _replEngine.Setup(x => x.WorkingDirectory).Returns((string) null);
+            _replEngine.Setup(x => x.Start(null)).Returns(_replEngine.Object);
         }
 
         private Mock<IProcessService> _processService;
@@ -48,7 +46,7 @@ namespace Simple.Wpf.FSharp.Repl.Tests
         public void repl_engine_executes_script_when_controller_execute_is_called()
         {
             // ARRANGE
-            var script = "let x = 345;;";
+            const string script = "let x = 345;;";
             _replEngine.Setup(x => x.Execute(script)).Returns(_replEngine.Object).Verifiable();
             var controller =
                 new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler);
