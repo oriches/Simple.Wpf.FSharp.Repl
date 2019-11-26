@@ -1,6 +1,8 @@
 Simple.Wpf.FSharp.Repl
 ======================
 
+[![Build status](https://ci.appveyor.com/api/projects/status/bo9i0a1bajgne80p/branch/master?svg=true)](https://ci.appveyor.com/project/oriches/simple-wpf-template/branch/master)
+
 A simple F# REPL engine for use in a WPF application. Mimics the F# Interactive console application inside a WPF user control. Currently based on the open source F# 3.1 Interactive process.
 
 Currently we support the following .Net versions:
