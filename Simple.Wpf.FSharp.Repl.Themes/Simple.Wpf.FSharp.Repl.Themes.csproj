@@ -35,11 +35,14 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Simple.Wpf.Terminal, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Simple.Wpf.Terminal.2.2.0\lib\net48\Simple.Wpf.Terminal.dll</HintPath>
+    <Reference Include="Simple.Wpf.Terminal, Version=2.3.57.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Simple.Wpf.Terminal.2.3.57\lib\net48\Simple.Wpf.Terminal.dll</HintPath>
     </Reference>
-    <Reference Include="Simple.Wpf.Terminal.Themes, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Simple.Wpf.Terminal.2.2.0\lib\net48\Simple.Wpf.Terminal.Themes.dll</HintPath>
+    <Reference Include="Simple.Wpf.Terminal.Common, Version=2.3.57.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Simple.Wpf.Terminal.2.3.57\lib\net48\Simple.Wpf.Terminal.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Simple.Wpf.Terminal.Themes, Version=2.3.57.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Simple.Wpf.Terminal.2.3.57\lib\net48\Simple.Wpf.Terminal.Themes.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

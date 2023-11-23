@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Input;
-using Simple.Wpf.Themes;
+using Simple.Wpf.Themes.Common;
 
 namespace Wpf.TestHarness
 {
@@ -35,9 +35,6 @@ namespace Wpf.TestHarness
             Loaded += OnLoaded;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
-        {
-            Keyboard.Focus(ThemeControl);
-        }
+        private void OnLoaded(object sender, RoutedEventArgs routedEventArgs) => Keyboard.Focus(ThemeControl);
     }
 }

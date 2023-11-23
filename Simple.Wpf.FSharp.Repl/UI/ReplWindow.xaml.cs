@@ -47,7 +47,7 @@ namespace Simple.Wpf.FSharp.Repl.UI
         /// </summary>
         public string StartUpScript
         {
-            get => (string) GetValue(StartUpScriptProperty);
+            get => (string)GetValue(StartUpScriptProperty);
             set => SetValue(StartUpScriptProperty, value);
         }
 
@@ -56,7 +56,7 @@ namespace Simple.Wpf.FSharp.Repl.UI
         /// </summary>
         public string WorkingDirectory
         {
-            get => (string) GetValue(WorkingDirectoryProperty);
+            get => (string)GetValue(WorkingDirectoryProperty);
             set => SetValue(WorkingDirectoryProperty, value);
         }
 

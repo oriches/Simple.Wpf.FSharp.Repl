@@ -46,7 +46,7 @@ namespace Simple.Wpf.FSharp.Repl.UI
         /// </summary>
         public Color Normal
         {
-            get => (Color) GetValue(NormalProperty);
+            get => (Color)GetValue(NormalProperty);
             set => SetValue(NormalProperty, value);
         }
 
@@ -55,7 +55,7 @@ namespace Simple.Wpf.FSharp.Repl.UI
         /// </summary>
         public Color Error
         {
-            get => (Color) GetValue(ErrorProperty);
+            get => (Color)GetValue(ErrorProperty);
             set => SetValue(ErrorProperty, value);
         }
 
@@ -73,7 +73,7 @@ namespace Simple.Wpf.FSharp.Repl.UI
 
             if (value is ReplLineViewModel)
             {
-                var line = (ReplLineViewModel) value;
+                var line = (ReplLineViewModel)value;
                 return line.IsError ? _errorBrush : _normalBrush;
             }
 
@@ -88,19 +88,13 @@ namespace Simple.Wpf.FSharp.Repl.UI
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
         /// <returns></returns>
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return Binding.DoNothing;
-        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+            Binding.DoNothing;
 
-        private static void OnNormalChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((LineColorConverter) d)._normalBrush = new SolidColorBrush((Color) e.NewValue);
-        }
+        private static void OnNormalChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+            ((LineColorConverter)d)._normalBrush = new SolidColorBrush((Color)e.NewValue);
 
-        private static void OnErrorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((LineColorConverter) d)._errorBrush = new SolidColorBrush((Color) e.NewValue);
-        }
+        private static void OnErrorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+            ((LineColorConverter)d)._errorBrush = new SolidColorBrush((Color)e.NewValue);
     }
 }

@@ -10,16 +10,13 @@ namespace Wpf.Mvvm.TestHarness
         public App()
         {
             _mainViewModel = new MainViewModel();
-            var mainWindow = new MainWindow {DataContext = _mainViewModel};
+            var mainWindow = new MainWindow { DataContext = _mainViewModel };
 
             Current.MainWindow = mainWindow;
             mainWindow.Show();
             mainWindow.Closed += MainWindowOnClosed;
         }
 
-        private void MainWindowOnClosed(object sender, EventArgs eventArgs)
-        {
-            _mainViewModel.Dispose();
-        }
+        private void MainWindowOnClosed(object sender, EventArgs eventArgs) => _mainViewModel.Dispose();
     }
 }

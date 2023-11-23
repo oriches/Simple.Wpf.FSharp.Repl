@@ -8,16 +8,10 @@ namespace Wpf.Mvvm.TestHarness
     {
         private readonly IReplEngineController _controller;
 
-        public MainViewModel()
-        {
-            _controller = new ReplEngineController("let ollie = 1337;;", @"C:\temp\fsharp");
-        }
+        public MainViewModel() => _controller = new ReplEngineController("let ollie = 1337;;", @"C:\temp\fsharp");
 
         public IReplEngineViewModel Content => _controller.ViewModel;
 
-        public void Dispose()
-        {
-            _controller.Dispose();
-        }
+        public void Dispose() => _controller.Dispose();
     }
 }

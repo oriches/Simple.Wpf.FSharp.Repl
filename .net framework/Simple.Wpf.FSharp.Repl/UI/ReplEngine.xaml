@@ -1,0 +1,122 @@
+﻿<UserControl x:Class="Simple.Wpf.FSharp.Repl.UI.ReplEngine"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:t="clr-namespace:Simple.Wpf.Terminal;assembly=Simple.Wpf.Terminal"
+             xmlns:vm="clr-namespace:Simple.Wpf.FSharp.Repl.UI.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="200"
+             d:DesignWidth="600"
+             d:DataContext="{d:DesignInstance vm:ReplEngineViewModel}">
+
+    <Grid Margin="5"
+          Style="{DynamicResource ReplGridStyle}">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="24" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel x:Name="Buttons"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Orientation="Horizontal"
+                    Style="{DynamicResource ReplButtonsStackPanelStyle}"
+                    VerticalAlignment="Bottom"
+                    Margin="4,0">
+
+            <Button x:Name="ClearButton"
+                    Height="20"
+                    Padding="4,0"
+                    Content="Clear"
+                    Margin="0,0,4,0"
+                    Style="{DynamicResource ReplButtonStyle}"
+                    FocusManager.IsFocusScope="false"
+                    FocusManager.FocusedElement="{Binding ElementName=TerminalOutput}"
+                    Command="{Binding Path=ClearCommand, Mode=OneWay}" />
+
+            <Button x:Name="ResetButton"
+                    Height="20"
+                    Padding="4,0"
+                    Content="Reset"
+                    Style="{DynamicResource ReplButtonStyle}"
+                    FocusManager.IsFocusScope="false"
+                    FocusManager.FocusedElement="{Binding ElementName=TerminalOutput}"
+                    Command="{Binding Path=ResetCommand, Mode=OneWay}" />
+
+        </StackPanel>
+
+        <TextBlock x:Name="StateTextBlock"
+                   Grid.Row="0"
+                   Grid.Column="1"
+                   Margin="4,0"
+                   Style="{DynamicResource ReplTextBlockStyle}"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"
+                   Text="{Binding Path=State, Mode=OneWay}" />
+
+        <Border x:Name="TerminalBorder"
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Padding="4"
+                Style="{DynamicResource ReplBorderStyle}">
+
+            <t:Terminal x:Name="TerminalOutput"
+                        IsReadOnlyCaretVisible="False"
+                        VerticalScrollBarVisibility="Visible"
+                        Style="{DynamicResource ReplTerminalStyle}"
+                        IsReadOnly="{Binding Path=IsReadOnly, Mode=OneWay}"
+                        Prompt="{Binding Path=Prompt, Mode=OneWay}"
+                        ItemsSource="{Binding Path=Output, Mode=OneWay}"
+                        ItemDisplayPath="Value">
+
+                <t:Terminal.InputBindings>
+                    <KeyBinding Command="{Binding Path=ClearCommand, Mode=OneWay}"
+                                Gesture="CTRL+E" />
+                    <KeyBinding Command="{Binding Path=ResetCommand, Mode=OneWay}"
+                                Gesture="CTRL+R" />
+                    <KeyBinding Command="{x:Null}"
+                                Gesture="CTRL+L" />
+                </t:Terminal.InputBindings>
+
+                <t:Terminal.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Clear"
+                                  InputGestureText="Ctrl+E"
+                                  Command="{Binding Path=ClearCommand, Mode=OneWay}" />
+                        <MenuItem Header="Reset"
+                                  InputGestureText="Ctrl+R"
+                                  Command="{Binding Path=ResetCommand, Mode=OneWay}" />
+                        <Separator />
+                        <MenuItem Header="Copy"
+                                  InputGestureText="Ctrl+C"
+                                  Command="ApplicationCommands.Copy" />
+                        <MenuItem Header="Paste"
+                                  InputGestureText="Ctrl+V"
+                                  Command="ApplicationCommands.Paste" />
+                        <Separator />
+                        <MenuItem Header="Open Working Folder"
+                                  Command="{Binding Path=OpenWorkingFolderCommand, Mode=OneWay}" />
+                    </ContextMenu>
+                </t:Terminal.ContextMenu>
+
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="LineEntered">
+                        <i:InvokeCommandAction Command="{Binding Path=ExecuteCommand, Mode=OneWay}"
+                                               CommandParameter="{Binding Path=Line, Mode=OneWay, ElementName=TerminalOutput}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+
+            </t:Terminal>
+
+        </Border>
+    </Grid>
+</UserControl>

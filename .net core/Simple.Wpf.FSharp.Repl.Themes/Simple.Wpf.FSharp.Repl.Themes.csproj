@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Version>2.2.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Simple.Wpf.Terminal" Version="2.3.39" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\.net standard\Simple.Wpf.FSharp.Repl.Common\Simple.Wpf.FSharp.Repl.Common.csproj" />
+    <ProjectReference Include="..\Simple.Wpf.FSharp.Repl\Simple.Wpf.FSharp.Repl.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="DarkBlueTheme.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="DarkTheme.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="DefaultBlueTheme.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="DefaultGreenTheme.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="DefaultRedTheme.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="WingdingTheme.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+</Project>

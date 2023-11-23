@@ -100,18 +100,14 @@ namespace Simple.Wpf.FSharp.Repl.Core
         /// <summary>
         ///     REPL engine output as a Reactive extensions stream.
         /// </summary>
-        public IObservable<string> Output
-        {
-            get { return _outputStream.Where(x => !x.IsError).Select(x => x.Output); }
-        }
+        public IObservable<string> Output => _outputStream.Where(x => !x.IsError)
+            .Select(x => x.Output);
 
         /// <summary>
         ///     REPL engine errors as a Reactive extensions stream.
         /// </summary>
-        public IObservable<string> Error
-        {
-            get { return _outputStream.Where(x => x.IsError).Select(x => x.Output); }
-        }
+        public IObservable<string> Error => _outputStream.Where(x => x.IsError)
+            .Select(x => x.Output);
 
         /// <summary>
         ///     REPL engine state changes as a Reactive extensions stream.
@@ -225,9 +221,8 @@ namespace Simple.Wpf.FSharp.Repl.Core
             }));
         }
 
-        private IObservable<Unit> ObserveStandardOutput(IProcess process, CancellationToken cancellationToken)
-        {
-            return Observable.Start(() =>
+        private IObservable<Unit> ObserveStandardOutput(IProcess process, CancellationToken cancellationToken) =>
+            Observable.Start(() =>
             {
                 _outputStream.OnNext(new ReplProcessOutput(string.Format(WorkingDirectoryOutput, WorkingDirectory)));
 
@@ -242,7 +237,7 @@ namespace Simple.Wpf.FSharp.Repl.Core
                             var readTask = process.StandardOutputReadAsync(cancellationToken);
                             readTask.Wait(cancellationToken);
 
-                            output += (char) readTask.Result;
+                            output += (char)readTask.Result;
 
                             if (output == AwaitingInput)
                             {
@@ -274,11 +269,9 @@ namespace Simple.Wpf.FSharp.Repl.Core
                     }
                 }
             }, _scheduler);
-        }
 
-        private IObservable<Unit> ObserveStandardErrors(IProcess process, CancellationToken cancellationToken)
-        {
-            return Observable.Start(() =>
+        private IObservable<Unit> ObserveStandardErrors(IProcess process, CancellationToken cancellationToken) =>
+            Observable.Start(() =>
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
@@ -291,7 +284,7 @@ namespace Simple.Wpf.FSharp.Repl.Core
                             var readTask = process.StandardErrorReadAsync(cancellationToken);
                             readTask.Wait(cancellationToken);
 
-                            error += (char) readTask.Result;
+                            error += (char)readTask.Result;
 
                             if (error.EndsWith(Environment.NewLine))
                             {
@@ -305,7 +298,6 @@ namespace Simple.Wpf.FSharp.Repl.Core
                     }
                 }
             }, _scheduler);
-        }
 
         private static void ExtractFSharpBinaries()
         {
@@ -350,17 +342,22 @@ namespace Simple.Wpf.FSharp.Repl.Core
 
         private static void CreateVersionFile(string binaryDirectory)
         {
-            var versionNumber = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            var versionNumber = Assembly.GetExecutingAssembly()
+                .GetName()
+                .Version.ToString();
             var versionFile = $"{versionNumber}.txt";
 
             var versionFilePath = Path.Combine(binaryDirectory, versionFile);
 
-            File.CreateText(versionFilePath).Dispose();
+            File.CreateText(versionFilePath)
+                .Dispose();
         }
 
         private static bool DoesVersionFileExist(string binaryDirectory)
         {
-            var versionNumber = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            var versionNumber = Assembly.GetExecutingAssembly()
+                .GetName()
+                .Version.ToString();
             var versionFile = $"{versionNumber}.txt";
 
             var versionFilePath = Path.Combine(binaryDirectory, versionFile);
@@ -410,10 +407,7 @@ namespace Simple.Wpf.FSharp.Repl.Core
             }
 
             // Use C# destructor syntax for finalization code.
-            ~ReplProcess()
-            {
-                DisposeImpl(false);
-            }
+            ~ReplProcess() => DisposeImpl(false);
 
             private void DisposeImpl(bool disposing)
             {
@@ -431,10 +425,7 @@ namespace Simple.Wpf.FSharp.Repl.Core
                 }
             }
 
-            public void WriteLine(string script)
-            {
-                _process.WriteStandardInput(script);
-            }
+            public void WriteLine(string script) => _process.WriteStandardInput(script);
         }
 
         internal sealed class ReplProcessOutput

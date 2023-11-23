@@ -129,10 +129,7 @@ namespace Simple.Wpf.FSharp.Repl.UI.ViewModels
         /// <summary>
         ///     Disposes the ViewModel.
         /// </summary>
-        public void Dispose()
-        {
-            _disposable.Dispose();
-        }
+        public void Dispose() => _disposable.Dispose();
 
         /// <summary>
         ///     The REPL engine working directory.
@@ -149,20 +146,11 @@ namespace Simple.Wpf.FSharp.Repl.UI.ViewModels
         /// </summary>
         public IObservable<string> Execute => _execute;
 
-        private bool CanClear()
-        {
-            return _output.Any();
-        }
+        private bool CanClear() => _output.Any();
 
-        private void Clear()
-        {
-            _output.Clear();
-        }
+        private void Clear() => _output.Clear();
 
-        private bool CanReset()
-        {
-            return _state == Core.State.Running;
-        }
+        private bool CanReset() => _state == Core.State.Running;
 
         private void ResetImpl()
         {
@@ -170,10 +158,7 @@ namespace Simple.Wpf.FSharp.Repl.UI.ViewModels
             _reset.OnNext(Unit.Default);
         }
 
-        private bool CanExecute(string arg)
-        {
-            return _state == Core.State.Running || _state == Core.State.Executing;
-        }
+        private bool CanExecute(string arg) => _state == Core.State.Running || _state == Core.State.Executing;
 
         private void ExecuteImpl(string line)
         {
@@ -195,9 +180,6 @@ namespace Simple.Wpf.FSharp.Repl.UI.ViewModels
             }
         }
 
-        private void OpenWorkingFolder()
-        {
-            _processService.StartWindowsExplorer(WorkingDirectory);
-        }
+        private void OpenWorkingFolder() => _processService.StartWindowsExplorer(WorkingDirectory);
     }
 }

@@ -8,7 +8,7 @@
 
     <Style x:Key="ReplTerminalStyle"
            TargetType="{x:Type terminal:Terminal}"
-           BasedOn="{StaticResource TerminalStyle}" />
+           BasedOn="{x:Null}" />
 
     <Style x:Key="ReplGridStyle"
            TargetType="{x:Type Grid}"

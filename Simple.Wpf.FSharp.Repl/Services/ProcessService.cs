@@ -10,10 +10,8 @@
         /// </summary>
         /// <param name="directory">The directory to open.</param>
         /// <returns>The started process.</returns>
-        public IProcess StartWindowsExplorer(string directory)
-        {
-            return new Process(System.Diagnostics.Process.Start(directory));
-        }
+        public IProcess StartWindowsExplorer(string directory) =>
+            new Process(System.Diagnostics.Process.Start(directory));
 
         /// <summary>
         ///     Start the F# REPL process.
@@ -21,9 +19,8 @@
         /// <param name="workingDirectory">The working directory for the F# REPL process.</param>
         /// <param name="executableDirectory">The executable path for the F# REPL process.</param>
         /// <returns>The started F# REPL process.</returns>
-        public IProcess StartReplExecutable(string workingDirectory, string executableDirectory)
-        {
-            return new Process(new System.Diagnostics.Process
+        public IProcess StartReplExecutable(string workingDirectory, string executableDirectory) =>
+            new Process(new System.Diagnostics.Process
             {
                 StartInfo =
                 {
@@ -36,6 +33,5 @@
                     FileName = executableDirectory
                 }
             });
-        }
     }
 }

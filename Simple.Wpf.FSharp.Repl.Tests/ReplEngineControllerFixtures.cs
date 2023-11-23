@@ -27,12 +27,17 @@ namespace Simple.Wpf.FSharp.Repl.Tests
             _stateSubject = new Subject<State>();
 
             _replEngine = new Mock<IReplEngine>(MockBehavior.Strict);
-            _replEngine.Setup(x => x.Error).Returns(_errorSubject);
-            _replEngine.Setup(x => x.Output).Returns(_outputSubject);
-            _replEngine.Setup(x => x.State).Returns(_stateSubject);
+            _replEngine.Setup(x => x.Error)
+                .Returns(_errorSubject);
+            _replEngine.Setup(x => x.Output)
+                .Returns(_outputSubject);
+            _replEngine.Setup(x => x.State)
+                .Returns(_stateSubject);
 
-            _replEngine.Setup(x => x.WorkingDirectory).Returns((string) null);
-            _replEngine.Setup(x => x.Start(null)).Returns(_replEngine.Object);
+            _replEngine.Setup(x => x.WorkingDirectory)
+                .Returns((string)null);
+            _replEngine.Setup(x => x.Start(null))
+                .Returns(_replEngine.Object);
         }
 
         private Mock<IProcessService> _processService;
@@ -47,10 +52,12 @@ namespace Simple.Wpf.FSharp.Repl.Tests
         {
             // ARRANGE
             const string script = "let x = 345;;";
-            _replEngine.Setup(x => x.Execute(script)).Returns(_replEngine.Object).Verifiable();
+            _replEngine.Setup(x => x.Execute(script))
+                .Returns(_replEngine.Object)
+                .Verifiable();
             var controller =
                 new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler);
-            var viewModel = (ReplEngineViewModel) controller.ViewModel;
+            var viewModel = (ReplEngineViewModel)controller.ViewModel;
 
             // ACT
             controller.Execute(script);
@@ -66,10 +73,12 @@ namespace Simple.Wpf.FSharp.Repl.Tests
         {
             // ARRANGE
             var script = @"let x = 123;;";
-            _replEngine.Setup(x => x.Execute(script)).Returns(_replEngine.Object).Verifiable();
+            _replEngine.Setup(x => x.Execute(script))
+                .Returns(_replEngine.Object)
+                .Verifiable();
             var controller = new ReplEngineController(null, null, _replEngine.Object, _processService.Object,
                 _testScheduler, _testScheduler);
-            var viewModel = (ReplEngineViewModel) controller.ViewModel;
+            var viewModel = (ReplEngineViewModel)controller.ViewModel;
             _stateSubject.OnNext(State.Running);
 
             _testScheduler.AdvanceBy(TimeSpan.FromSeconds(1));
@@ -89,7 +98,7 @@ namespace Simple.Wpf.FSharp.Repl.Tests
             // ARRANGE
             var controller =
                 new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler);
-            var viewModel = (ReplEngineViewModel) controller.ViewModel;
+            var viewModel = (ReplEngineViewModel)controller.ViewModel;
 
             // ACT
             _errorSubject.OnNext("error 1");
@@ -98,8 +107,10 @@ namespace Simple.Wpf.FSharp.Repl.Tests
 
             // ASSERT
             Assert.That(viewModel.Output.Count(), Is.EqualTo(1));
-            Assert.That(viewModel.Output.First().Value, Is.EqualTo("error 1"));
-            Assert.That(viewModel.Output.First().IsError, Is.True);
+            Assert.That(viewModel.Output.First()
+                .Value, Is.EqualTo("error 1"));
+            Assert.That(viewModel.Output.First()
+                .IsError, Is.True);
         }
 
 
@@ -109,7 +120,7 @@ namespace Simple.Wpf.FSharp.Repl.Tests
             // ARRANGE
             var controller =
                 new ReplEngineController(null, null, _replEngine.Object, _processService.Object, _testScheduler);
-            var viewModel = (ReplEngineViewModel) controller.ViewModel;
+            var viewModel = (ReplEngineViewModel)controller.ViewModel;
 
             // ACT
             _outputSubject.OnNext("line 1");
@@ -118,8 +129,10 @@ namespace Simple.Wpf.FSharp.Repl.Tests
 
             // ASSERT
             Assert.That(viewModel.Output.Count(), Is.EqualTo(1));
-            Assert.That(viewModel.Output.First().Value, Is.EqualTo("line 1"));
-            Assert.That(viewModel.Output.First().IsError, Is.False);
+            Assert.That(viewModel.Output.First()
+                .Value, Is.EqualTo("line 1"));
+            Assert.That(viewModel.Output.First()
+                .IsError, Is.False);
         }
 
         [Test]
@@ -158,10 +171,12 @@ namespace Simple.Wpf.FSharp.Repl.Tests
         public void repl_engine_resets_when_view_model_reset_is_called()
         {
             // ARRANGE
-            _replEngine.Setup(x => x.Reset()).Returns(_replEngine.Object).Verifiable();
+            _replEngine.Setup(x => x.Reset())
+                .Returns(_replEngine.Object)
+                .Verifiable();
             var controller = new ReplEngineController(null, null, _replEngine.Object, _processService.Object,
                 _testScheduler, _testScheduler);
-            var viewModel = (ReplEngineViewModel) controller.ViewModel;
+            var viewModel = (ReplEngineViewModel)controller.ViewModel;
             _stateSubject.OnNext(State.Running);
 
             _testScheduler.AdvanceBy(TimeSpan.FromSeconds(1));

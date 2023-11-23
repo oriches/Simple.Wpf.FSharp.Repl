@@ -13,7 +13,7 @@
 
     <Style x:Key="ReplTerminalStyle"
            TargetType="{x:Type terminal:Terminal}"
-           BasedOn="{StaticResource TerminalStyle}">
+           BasedOn="{x:Null}">
         <Setter Property="LineColorConverter"
                 Value="{StaticResource LineColorConverter}" />
     </Style>

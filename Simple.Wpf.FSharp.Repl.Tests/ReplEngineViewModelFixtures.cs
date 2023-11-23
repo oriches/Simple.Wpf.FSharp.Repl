@@ -119,7 +119,8 @@ namespace Simple.Wpf.FSharp.Repl.Tests
         public void opens_working_folder()
         {
             // ARRANGE
-            _processService.Setup(x => x.StartWindowsExplorer(It.IsAny<string>())).Returns(_process.Object)
+            _processService.Setup(x => x.StartWindowsExplorer(It.IsAny<string>()))
+                .Returns(_process.Object)
                 .Verifiable();
 
             // ACT
@@ -143,7 +144,8 @@ namespace Simple.Wpf.FSharp.Repl.Tests
             // ACT
             _viewModel.ExecuteCommand.Execute("line 1");
 
-            _scheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+            _scheduler.AdvanceBy(TimeSpan.FromSeconds(1)
+                .Ticks);
 
             // ASSERT
             Assert.That(called, Is.True);
@@ -163,7 +165,8 @@ namespace Simple.Wpf.FSharp.Repl.Tests
             // ACT
             _viewModel.ResetCommand.Execute(null);
 
-            _scheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+            _scheduler.AdvanceBy(TimeSpan.FromSeconds(1)
+                .Ticks);
 
             // ASSERT
             Assert.That(called, Is.True);
@@ -233,9 +236,14 @@ namespace Simple.Wpf.FSharp.Repl.Tests
             // ASSERT
             Assert.That(initialOutput, Is.Empty);
             Assert.That(finalOutput.Count(), Is.EqualTo(3));
-            Assert.That(finalOutput.First().Value, Is.EqualTo("error 1"));
-            Assert.That(finalOutput.Skip(1).First().Value, Is.EqualTo("error 2"));
-            Assert.That(finalOutput.Skip(2).First().Value, Is.EqualTo("error 3"));
+            Assert.That(finalOutput.First()
+                .Value, Is.EqualTo("error 1"));
+            Assert.That(finalOutput.Skip(1)
+                .First()
+                .Value, Is.EqualTo("error 2"));
+            Assert.That(finalOutput.Skip(2)
+                .First()
+                .Value, Is.EqualTo("error 3"));
         }
 
         [Test]
@@ -254,9 +262,14 @@ namespace Simple.Wpf.FSharp.Repl.Tests
             // ASSERT
             Assert.That(initialOutput, Is.Empty);
             Assert.That(finalOutput.Count(), Is.EqualTo(3));
-            Assert.That(finalOutput.First().Value, Is.EqualTo("line 1"));
-            Assert.That(finalOutput.Skip(1).First().Value, Is.EqualTo("line 2"));
-            Assert.That(finalOutput.Skip(2).First().Value, Is.EqualTo("line 3"));
+            Assert.That(finalOutput.First()
+                .Value, Is.EqualTo("line 1"));
+            Assert.That(finalOutput.Skip(1)
+                .First()
+                .Value, Is.EqualTo("line 2"));
+            Assert.That(finalOutput.Skip(2)
+                .First()
+                .Value, Is.EqualTo("line 3"));
         }
     }
 }

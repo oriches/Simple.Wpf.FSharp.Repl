@@ -10,9 +10,6 @@ namespace Simple.Wpf.FSharp.Repl.UI
         /// <summary>
         ///     Creates an instance of the user control for the REPL engine.
         /// </summary>
-        public ReplEngine()
-        {
-            InitializeComponent();
-        }
+        public ReplEngine() => InitializeComponent();
     }
 }

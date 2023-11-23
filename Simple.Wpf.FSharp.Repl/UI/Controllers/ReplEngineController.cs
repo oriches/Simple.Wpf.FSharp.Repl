@@ -75,18 +75,12 @@ namespace Simple.Wpf.FSharp.Repl.UI.Controllers
         ///     Execute the script
         /// </summary>
         /// <param name="script">The script to execute.</param>
-        public void Execute(string script)
-        {
-            _replEngine.Execute(script);
-        }
+        public void Execute(string script) => _replEngine.Execute(script);
 
         /// <summary>
         ///     Disposes the controller.
         /// </summary>
-        public void Dispose()
-        {
-            _disposable.Dispose();
-        }
+        public void Dispose() => _disposable.Dispose();
 
         private IReplEngineViewModel CreateViewModelAndStartEngine()
         {
